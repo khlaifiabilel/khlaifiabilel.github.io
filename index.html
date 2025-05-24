@@ -6,6 +6,9 @@
     <title>Khlaifi Abilel - Portfolio & Blog</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Added meta tags for better SEO -->
+    <meta name="description" content="Khlaifia Bilel - Web Developer, Tech Enthusiast and Content Creator. Portfolio showcasing projects, technical blogs, reviews and tech news.">
+    <meta name="keywords" content="web development, programming, tech blog, portfolio, Khlaifi Abilel">
 </head>
 <body>
     <header>
@@ -30,74 +33,308 @@
         <section class="hero">
             <div class="hero-content">
                 <h1>Hello, I'm <span>Khlaifi Abilel</span></h1>
-                <p>Web Developer | Tech Enthusiast | Content Creator</p>
-                <a href="#about" class="btn">Learn More</a>
+                <p>Full Stack Developer | AI Enthusiast | Tech Content Creator</p>
+                <div class="hero-buttons">
+                    <a href="#about" class="btn">Learn More</a>
+                    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+                </div>
             </div>
         </section>
 
         <section id="about" class="about">
-            <h2>About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Welcome to my portfolio and blog! I'm passionate about technology and software development.</p>
-                    <p>Here you'll find my projects, technical blogs, reviews of tech products, and the latest tech news.</p>
+            <div class="section-header">
+                <h2>About Me</h2>
+                <p class="section-subtitle">My Background & Journey</p>
+            </div>
+            
+            <div class="about-container">
+                <div class="about-image">
+                    <img src="assets/images/profile-photo.jpg" alt="Khlaifi Abilel" class="profile-photo">
+                    <div class="social-icons">
+                        <a href="https://github.com/khlaifiabilel" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="https://linkedin.com/in/khlaifi-abilel" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://twitter.com/khlaifiabilel" target="_blank"><i class="fab fa-twitter"></i></a>
+                    </div>
                 </div>
-                <div class="skills">
-                    <h3>My Skills</h3>
-                    <div class="skill-tags">
-                        <span>HTML</span>
-                        <span>CSS</span>
-                        <span>JavaScript</span>
-                        <!-- Add more skills here -->
+                
+                <div class="about-content">
+                    <div class="about-text">
+                        <p class="intro-text">I'm a passionate Full Stack Developer with over 7 years of experience building innovative web applications and exploring emerging technologies.</p>
+                        
+                        <p>After completing my Computer Science degree at the University of Technology in 2018, I joined TechVision Labs where I honed my skills in modern JavaScript frameworks and cloud architecture. During my time there, I led the development of several high-traffic web applications and mentored junior developers.</p>
+                        
+                        <p>In 2021, I transitioned to a Senior Developer role at AI Innovations, where I've been focused on integrating machine learning models into web applications and building developer tools that simplify complex workflows.</p>
+                        
+                        <p>Beyond my professional work, I'm deeply interested in open source contributions, writing technical articles, and exploring the ethical implications of emerging technologies. When I'm not coding, you can find me hiking, playing chess, or experimenting with new recipes.</p>
+                        
+                        <div class="key-facts">
+                            <div class="fact">
+                                <i class="fas fa-laptop-code"></i>
+                                <h4>7+ Years</h4>
+                                <p>Professional Experience</p>
+                            </div>
+                            <div class="fact">
+                                <i class="fas fa-project-diagram"></i>
+                                <h4>30+</h4>
+                                <p>Completed Projects</p>
+                            </div>
+                            <div class="fact">
+                                <i class="fas fa-users"></i>
+                                <h4>15+</h4>
+                                <p>Happy Clients</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="skills-section">
+                        <h3>Technical Expertise</h3>
+                        <div class="skill-categories">
+                            <div class="skill-category">
+                                <h4>Frontend</h4>
+                                <div class="skill-tags">
+                                    <span>JavaScript</span>
+                                    <span>React</span>
+                                    <span>Vue</span>
+                                    <span>TypeScript</span>
+                                    <span>HTML/CSS</span>
+                                    <span>Tailwind CSS</span>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-category">
+                                <h4>Backend</h4>
+                                <div class="skill-tags">
+                                    <span>Node.js</span>
+                                    <span>Express</span>
+                                    <span>Python</span>
+                                    <span>Django</span>
+                                    <span>GraphQL</span>
+                                    <span>RESTful APIs</span>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-category">
+                                <h4>Other</h4>
+                                <div class="skill-tags">
+                                    <span>AWS</span>
+                                    <span>Docker</span>
+                                    <span>CI/CD</span>
+                                    <span>Git</span>
+                                    <span>MongoDB</span>
+                                    <span>PostgreSQL</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cta-buttons">
+                        <a href="assets/files/khlaifi-abilel-resume.pdf" class="btn" target="_blank">Download Resume <i class="fas fa-download"></i></a>
+                        <a href="#contact" class="btn btn-outline">Contact Me</a>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="featured-projects">
-            <h2>Featured Projects</h2>
+            <div class="section-header">
+                <h2>Featured Projects</h2>
+                <p class="section-subtitle">Recent Work I'm Proud Of</p>
+            </div>
+            
             <div class="project-cards">
-                <!-- Sample Project Card -->
+                <!-- Project Card 1 -->
                 <div class="card">
-                    <img src="assets/images/placeholder.jpg" alt="Project 1">
+                    <img src="assets/images/project1.jpg" alt="AI Content Generator">
                     <div class="card-content">
-                        <h3>Project Name</h3>
-                        <p>Short description of the project and technologies used.</p>
-                        <a href="projects/index.html" class="btn">Learn More</a>
+                        <h3>AI Content Generator</h3>
+                        <div class="tech-stack">
+                            <span>React</span>
+                            <span>Node.js</span>
+                            <span>GPT-3</span>
+                        </div>
+                        <p>A web application that leverages OpenAI's GPT-3 to help content creators generate article outlines, blog posts, and social media content.</p>
+                        <div class="card-links">
+                            <a href="projects/ai-content-generator.html" class="btn">View Details</a>
+                            <a href="https://github.com/khlaifiabilel/ai-content-generator" target="_blank" class="btn-icon"><i class="fab fa-github"></i></a>
+                            <a href="https://ai-content-demo.khlaifiabilel.com" target="_blank" class="btn-icon"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
                     </div>
                 </div>
-                <!-- Add more project cards here -->
+                
+                <!-- Project Card 2 -->
+                <div class="card">
+                    <img src="assets/images/project2.jpg" alt="DevOps Dashboard">
+                    <div class="card-content">
+                        <h3>DevOps Dashboard</h3>
+                        <div class="tech-stack">
+                            <span>Vue.js</span>
+                            <span>Express</span>
+                            <span>Docker</span>
+                        </div>
+                        <p>A comprehensive dashboard for development teams to monitor CI/CD pipelines, server health, and deployment statuses in real-time.</p>
+                        <div class="card-links">
+                            <a href="projects/devops-dashboard.html" class="btn">View Details</a>
+                            <a href="https://github.com/khlaifiabilel/devops-dashboard" target="_blank" class="btn-icon"><i class="fab fa-github"></i></a>
+                            <a href="https://devops-dash.khlaifiabilel.com" target="_blank" class="btn-icon"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 3 -->
+                <div class="card">
+                    <img src="assets/images/project3.jpg" alt="E-Commerce Platform">
+                    <div class="card-content">
+                        <h3>E-Commerce Platform</h3>
+                        <div class="tech-stack">
+                            <span>Next.js</span>
+                            <span>GraphQL</span>
+                            <span>MongoDB</span>
+                        </div>
+                        <p>A full-featured e-commerce solution with inventory management, payment processing, and analytics dashboard for small businesses.</p>
+                        <div class="card-links">
+                            <a href="projects/ecommerce-platform.html" class="btn">View Details</a>
+                            <a href="https://github.com/khlaifiabilel/ecom-platform" target="_blank" class="btn-icon"><i class="fab fa-github"></i></a>
+                            <a href="https://ecom-demo.khlaifiabilel.com" target="_blank" class="btn-icon"><i class="fas fa-external-link-alt"></i></a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <a href="projects/index.html" class="btn-secondary">View All Projects</a>
+            <div class="section-footer">
+                <a href="projects/index.html" class="btn-secondary">View All Projects <i class="fas fa-arrow-right"></i></a>
+            </div>
         </section>
 
         <section class="latest-posts">
-            <h2>Latest Blog Posts</h2>
+            <div class="section-header">
+                <h2>Latest Blog Posts</h2>
+                <p class="section-subtitle">Tech Insights & Tutorials</p>
+            </div>
+            
             <div class="post-cards">
-                <!-- Sample Blog Post Card -->
+                <!-- Blog Post Card 1 -->
                 <div class="card">
-                    <img src="assets/images/placeholder.jpg" alt="Blog Post">
+                    <img src="assets/images/blog1.jpg" alt="Machine Learning Blog">
                     <div class="card-content">
-                        <span class="date">May 24, 2025</span>
-                        <h3>Blog Post Title</h3>
-                        <p>Short excerpt from the blog post...</p>
-                        <a href="blog/index.html" class="btn">Read More</a>
+                        <span class="date">May 22, 2025</span>
+                        <h3>Getting Started with Machine Learning in JavaScript</h3>
+                        <p>Explore the TensorFlow.js library and learn how to implement basic machine learning models directly in the browser without any backend requirements.</p>
+                        <a href="blog/machine-learning-javascript.html" class="btn">Read Article</a>
                     </div>
                 </div>
-                <!-- Add more blog post cards here -->
+                
+                <!-- Blog Post Card 2 -->
+                <div class="card">
+                    <img src="assets/images/blog2.jpg" alt="API Design Blog">
+                    <div class="card-content">
+                        <span class="date">May 15, 2025</span>
+                        <h3>RESTful API Design Best Practices in 2025</h3>
+                        <p>Learn about the latest standards and approaches to designing scalable, secure, and developer-friendly RESTful APIs for modern applications.</p>
+                        <a href="blog/api-design-best-practices.html" class="btn">Read Article</a>
+                    </div>
+                </div>
+                
+                <!-- Blog Post Card 3 -->
+                <div class="card">
+                    <img src="assets/images/blog3.jpg" alt="Web Performance Blog">
+                    <div class="card-content">
+                        <span class="date">May 7, 2025</span>
+                        <h3>Optimizing Web Performance: Beyond the Basics</h3>
+                        <p>Advanced techniques to improve loading times, reduce JavaScript execution time, and create a smoother user experience in modern web applications.</p>
+                        <a href="blog/web-performance-optimization.html" class="btn">Read Article</a>
+                    </div>
+                </div>
             </div>
-            <a href="blog/index.html" class="btn-secondary">View All Posts</a>
+            <div class="section-footer">
+                <a href="blog/index.html" class="btn-secondary">View All Articles <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <p class="section-subtitle">Let's Connect</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-method">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email</h3>
+                        <p><a href="mailto:contact@khlaifiabilel.com">contact@khlaifiabilel.com</a></p>
+                    </div>
+                    <div class="contact-method">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Location</h3>
+                        <p>San Francisco, California</p>
+                    </div>
+                    <div class="contact-method">
+                        <i class="fas fa-globe"></i>
+                        <h3>Social</h3>
+                        <div class="social-links-horizontal">
+                            <a href="https://github.com/khlaifiabilel" target="_blank"><i class="fab fa-github"></i></a>
+                            <a href="https://linkedin.com/in/khlaifi-abilel" target="_blank"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://twitter.com/khlaifiabilel" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://dev.to/khlaifiabilel" target="_blank"><i class="fab fa-dev"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form action="https://formspree.io/f/yourformid" method="POST">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-full">Send Message <i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
         <div class="footer-content">
-            <div class="social-links">
-                <a href="https://github.com/khlaifiabilel" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com/in/yourprofile" target="_blank"><i class="fab fa-linkedin"></i></a>
-                <a href="https://twitter.com/yourhandle" target="_blank"><i class="fab fa-twitter"></i></a>
+            <div class="footer-info">
+                <div class="footer-logo">
+                    <h2>Khlaifi Abilel</h2>
+                    <p>Full Stack Developer | AI Enthusiast | Tech Content Creator</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h3>Site Map</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="projects/index.html">Projects</a></li>
+                            <li><a href="blog/index.html">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h3>Connect</h3>
+                        <ul>
+                            <li><a href="https://github.com/khlaifiabilel" target="_blank">GitHub</a></li>
+                            <li><a href="https://linkedin.com/in/khlaifi-abilel" target="_blank">LinkedIn</a></li>
+                            <li><a href="https://twitter.com/khlaifiabilel" target="_blank">Twitter</a></li>
+                            <li><a href="https://dev.to/khlaifiabilel" target="_blank">Dev.to</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <p>&copy; 2025 Khlaifi Abilel. All Rights Reserved.</p>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Khlaifi Abilel. All Rights Reserved.</p>
+                <p class="last-updated">Last updated: May 24, 2025</p>
+            </div>
         </div>
     </footer>
     
