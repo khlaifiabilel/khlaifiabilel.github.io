@@ -1,0 +1,35 @@
+<!--
+  Square (1200x1200) render source for og.png.
+  qlmanage pads SVGs to a square canvas, so all content sits inside the
+  centre 630px band (y 285..915). Center-cropping to 1200x630 yields og.png.
+
+  Regenerate: see README.md, section "Regenerating the social image".
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#0a0a0a"/>
+
+  <!-- frame: inset 64 horizontally, 64 within the centre band -->
+  <rect x="64" y="349" width="1072" height="502" fill="none" stroke="#2b2b2b" stroke-width="2"/>
+
+  <text x="104" y="437"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="19" fill="#8a8a8a" letter-spacing="4">AI / MACHINE LEARNING ENGINEER</text>
+
+  <text x="100" y="590"
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="108" font-weight="700" fill="#ffffff" letter-spacing="-5">Bilel Khlaifia</text>
+
+  <text x="104" y="659"
+        font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="27" fill="#a8a8a8">Computer vision &#183; Geospatial ML &#183; Distributed training</text>
+
+  <line x1="104" y1="731" x2="1096" y2="731" stroke="#2b2b2b" stroke-width="2"/>
+
+  <text x="104" y="787"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="20" fill="#8a8a8a">PyTorch &#183; CUDA C++ &#183; TensorRT &#183; Sentinel-1/2</text>
+
+  <text x="1096" y="787" text-anchor="end"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="20" fill="#8a8a8a">github.com/khlaifiabilel</text>
+</svg>
