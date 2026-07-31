@@ -138,7 +138,7 @@
 
       <section id="benchmark">
         <h2>3. Measured single-GPU benchmarks</h2>
-        <h3>Historical end-to-end run</h3>
+        <h3>Historical training experiment</h3>
         <div class="table-wrap">
           <table>
             <tbody>
@@ -257,7 +257,7 @@
         <p>Remote-sensing training can combine NPY reads, GeoTIFF decoding, temporal sampling, validity masks and spatially coupled augmentation. Adding ranks multiplies demand on storage and CPU workers. If input production is slower than GPU consumption, DDP duplicates starvation rather than compute.</p>
         <p>Measure queue wait, decode time, augmentation time, pinned-memory transfer and GPU idle gaps separately. Tune persistent workers, prefetch depth, pinned memory, non-blocking copies and local caching only after the profiler identifies the dominant term.</p>
 
-        <h3>Validation and mosaicking</h3>
+        <h3>Validation and tiled inference</h3>
         <p>Tiled validation performs overlapping inference, logit blending, metric accumulation and high-grid diagnostics. Training throughput alone can therefore overstate end-to-end improvement. Validation must either be distributed with mathematically equivalent aggregation or timed as a separate fixed component.</p>
 
         <h3>Numerical correctness</h3>
