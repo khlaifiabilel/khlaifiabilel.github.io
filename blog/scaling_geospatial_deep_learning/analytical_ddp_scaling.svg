@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+<title id="title">Analytical Amdahl strong-scaling sensitivity</title>
+<desc id="desc">Not measured. Speedup at 8 GPUs: 4.71× (10% serial), 3.33× (20%), 2.32× (35%).</desc>
+<style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub{font-size:11px;fill:#666}.tick{font-size:10px;fill:#666}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}.axis{stroke:#101010;stroke-width:1.3}.line{fill:none;stroke-width:2.5}.dash{stroke-dasharray:6 5}</style>
+<rect width="760" height="430" fill="#ffffff"/>
+<text x="42" y="35" class="title">Analytical Amdahl strong-scaling sensitivity</text>
+<text x="42" y="55" class="sub">Not measured. Speedup at 8 GPUs: 4.71× (10% serial), 3.33× (20%), 2.32× (35%).</text>
+<line x1="72" y1="355.0" x2="712" y2="355.0" class="grid"/>
+<text x="62" y="359.0" text-anchor="end" class="tick">0</text>
+<line x1="72" y1="288.8" x2="712" y2="288.8" class="grid"/>
+<text x="62" y="292.8" text-anchor="end" class="tick">2</text>
+<line x1="72" y1="222.5" x2="712" y2="222.5" class="grid"/>
+<text x="62" y="226.5" text-anchor="end" class="tick">4</text>
+<line x1="72" y1="156.2" x2="712" y2="156.2" class="grid"/>
+<text x="62" y="160.2" text-anchor="end" class="tick">6</text>
+<line x1="72" y1="90.0" x2="712" y2="90.0" class="grid"/>
+<text x="62" y="94.0" text-anchor="end" class="tick">8</text>
+<path d="M 72.0 321.9 L 285.3 294.8 L 498.7 253.1 L 712.0 199.1" class="line" stroke="#15803d"/>
+<circle cx="72.0" cy="321.9" r="4" fill="#15803d"/>
+<circle cx="285.3" cy="294.8" r="4" fill="#15803d"/>
+<circle cx="498.7" cy="253.1" r="4" fill="#15803d"/>
+<circle cx="712.0" cy="199.1" r="4" fill="#15803d"/>
+<path d="M 72.0 321.9 L 285.3 299.8 L 498.7 272.2 L 712.0 244.6" class="line" stroke="#2563eb" stroke-dasharray="9 4"/>
+<rect x="68.0" y="317.9" width="8" height="8" fill="#2563eb"/>
+<rect x="281.3" y="295.8" width="8" height="8" fill="#2563eb"/>
+<rect x="494.7" y="268.2" width="8" height="8" fill="#2563eb"/>
+<rect x="708.0" y="240.6" width="8" height="8" fill="#2563eb"/>
+<path d="M 72.0 321.9 L 285.3 305.9 L 498.7 290.4 L 712.0 278.2" class="line" stroke="#d97706" stroke-dasharray="3 4"/>
+<path d="M 72.0 316.9 L 77.0 325.9 L 67.0 325.9 Z" fill="#d97706"/>
+<path d="M 285.3 300.9 L 290.3 309.9 L 280.3 309.9 Z" fill="#d97706"/>
+<path d="M 498.7 285.4 L 503.7 294.4 L 493.7 294.4 Z" fill="#d97706"/>
+<path d="M 712.0 273.2 L 717.0 282.2 L 707.0 282.2 Z" fill="#d97706"/>
+<path d="M 72.0 321.9 L 285.3 288.8 L 498.7 222.5 L 712.0 90.0" class="line dash" stroke="#666666"/>
+<text x="72.0" y="377" text-anchor="middle" class="label">1 GPU</text>
+<text x="285.3" y="377" text-anchor="middle" class="label">2 GPU</text>
+<text x="498.7" y="377" text-anchor="middle" class="label">4 GPU</text>
+<text x="712.0" y="377" text-anchor="middle" class="label">8 GPU</text>
+<text x="18" y="230" transform="rotate(-90 18 230)" class="label">Theoretical speedup</text>
+<line x1="390" y1="400" x2="414" y2="400" stroke="#15803d" stroke-width="3"/><text x="420" y="404" class="tick">10%</text>
+<line x1="465" y1="400" x2="489" y2="400" stroke="#2563eb" stroke-width="3"/><text x="495" y="404" class="tick">20%</text>
+<line x1="540" y1="400" x2="564" y2="400" stroke="#d97706" stroke-width="3"/><text x="570" y="404" class="tick">35% serial</text>
+<line x1="645" y1="400" x2="669" y2="400" stroke="#666666" stroke-width="2" stroke-dasharray="5 4"/><text x="675" y="404" class="tick">Ideal</text>
+</svg>

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-07-31T12:04:15.697428+00:00",
+  "scope": "synthetic tensors resident on GPU; full model, weighted loss, backward pass, gradient clipping and AdamW update; excludes data loading and validation",
+  "seed": 42,
+  "benchmark": {
+    "script_sha256": "d2dd2befa6f6a6fca8aaaa8e2ff727a9fc7ad79c0517bf27010d868a410c377d",
+    "invocation": {
+      "warmup": 10,
+      "iterations": 30,
+      "batch_sizes": [
+        1,
+        2,
+        4
+      ],
+      "precisions": [
+        "fp32",
+        "amp_fp16"
+      ]
+    },
+    "device_index": 0,
+    "hostname": "nextav-Z790-AORUS-ELITE-AX"
+  },
+  "source": {
+    "commit": "2b34ef4b60744c11e495324e89882402d8d5d6f6",
+    "worktree_clean": true
+  },
+  "model": "CropSuperResolutionNet",
+  "model_parameters": 1947456,
+  "input": {
+    "s2": "[B,16,10,32,32]",
+    "s1_ascending": "[B,4,2,32,32]",
+    "s1_descending": "[B,4,2,32,32]",
+    "spot_target": "[B,3,320,320]"
+  },
+  "runtime": {
+    "python": "3.12.13",
+    "pytorch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "cudnn": 90100,
+    "gpu": "NVIDIA GeForce RTX 4080",
+    "driver": "595.71.05",
+    "power_limit_w": "340.00",
+    "persistence_mode": "Disabled"
+  },
+  "results": [
+    {
+      "batch_size": 1,
+      "precision": "fp32",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 29.907273994467687,
+      "mean_step_ms": 29.884225765999872,
+      "p95_step_ms": 30.430736947892,
+      "throughput_samples_s": 33.436681664299535,
+      "peak_allocated_gib": 0.8710775375366211,
+      "peak_reserved_gib": 1.06640625
+    },
+    {
+      "batch_size": 2,
+      "precision": "fp32",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 54.97216399817262,
+      "mean_step_ms": 54.95673853244322,
+      "p95_step_ms": 55.376783804240404,
+      "throughput_samples_s": 36.3820496509194,
+      "peak_allocated_gib": 1.6757903099060059,
+      "peak_reserved_gib": 2.158203125
+    },
+    {
+      "batch_size": 4,
+      "precision": "fp32",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 104.99545699713053,
+      "mean_step_ms": 104.93012463363509,
+      "p95_step_ms": 105.44169424974825,
+      "throughput_samples_s": 38.09688642156506,
+      "peak_allocated_gib": 3.293748378753662,
+      "peak_reserved_gib": 4.095703125
+    },
+    {
+      "batch_size": 1,
+      "precision": "amp_fp16",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 24.524069995095488,
+      "mean_step_ms": 24.66286693428022,
+      "p95_step_ms": 25.492187555209966,
+      "throughput_samples_s": 40.77626593791274,
+      "peak_allocated_gib": 0.672999382019043,
+      "peak_reserved_gib": 0.814453125
+    },
+    {
+      "batch_size": 2,
+      "precision": "amp_fp16",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 39.198181497340556,
+      "mean_step_ms": 39.268080301796246,
+      "p95_step_ms": 39.82357300701551,
+      "throughput_samples_s": 51.02277512888429,
+      "peak_allocated_gib": 1.283459186553955,
+      "peak_reserved_gib": 1.57421875
+    },
+    {
+      "batch_size": 4,
+      "precision": "amp_fp16",
+      "warmup_steps": 10,
+      "measured_steps": 30,
+      "median_step_ms": 73.65317599760601,
+      "mean_step_ms": 73.76862326442884,
+      "p95_step_ms": 74.94089794345199,
+      "throughput_samples_s": 54.30858813379635,
+      "peak_allocated_gib": 2.5044069290161133,
+      "peak_reserved_gib": 3.083984375
+    }
+  ]
+}

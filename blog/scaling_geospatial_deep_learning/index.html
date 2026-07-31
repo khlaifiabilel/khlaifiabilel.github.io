@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scaling Geospatial Deep Learning | Bilel Khlaifia</title>
+<meta name="description" content="A measurement-driven study of single-GPU geospatial training, mixed precision, memory scaling and the evidence required for distributed PyTorch DDP claims.">
+<meta name="author" content="Bilel Khlaifia">
+<link rel="canonical" href="https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/">
+<meta property="og:title" content="Scaling Geospatial Deep Learning">
+<meta property="og:description" content="From a measured single-GPU baseline to a falsifiable distributed PyTorch training plan.">
+<meta property="og:image" content="https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/social-preview.png">
+<meta property="article:published_time" content="2026-07-31">
+<meta property="article:author" content="Bilel Khlaifia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Scaling Geospatial Deep Learning">
+<meta name="twitter:description" content="Measured single-GPU training, mixed precision and analytical DDP scaling.">
+<meta name="twitter:image" content="https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/social-preview.png">
+
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Scaling Geospatial Deep Learning: From a Single GPU to Distributed PyTorch Training",
+  "description": "A measurement-driven study of single-GPU geospatial training, mixed precision, memory scaling and distributed PyTorch DDP evidence.",
+  "datePublished": "2026-07-31",
+  "dateModified": "2026-07-31",
+  "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
+  "image": "https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/social-preview.png",
+  "url": "https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/",
+  "keywords": ["PyTorch DDP", "distributed training", "mixed precision", "GPU profiling", "geospatial machine learning"]
+}
+</script>
+</head>
+<body class="article-shell">
+<a class="skip" href="#article">Skip to article</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark" aria-hidden="true">BK</span>
+      <span class="brand-name">Bilel Khlaifia</span>
+    </a>
+    <nav class="nav" aria-label="Article">
+      <a href="#evidence">Evidence</a>
+      <a href="#benchmark">Benchmark</a>
+      <a href="#ddp">DDP model</a>
+      <a href="#systems">Systems</a>
+      <a href="#protocol">Protocol</a>
+    </nav>
+    <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <span class="toggle-dot" aria-hidden="true"></span>
+      <span class="toggle-text">Invert</span>
+    </button>
+  </div>
+</header>
+
+<main id="article">
+  <header class="article-head">
+    <div class="wrap">
+      <p class="article-kicker">Research note 002 &middot; ML systems</p>
+      <h1 class="article-title">Scaling geospatial deep learning</h1>
+      <p class="article-deck">From a single GPU to distributed PyTorch training, with measured baselines and explicit limits on what the evidence supports.</p>
+      <div class="article-byline">
+        <span>Bilel Khlaifia</span>
+        <time datetime="2026-07-31">31 July 2026</time>
+        <span>Approximately 16-minute read</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+    <aside class="article-toc" aria-label="Contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#evidence">1. Evidence</a></li>
+        <li><a href="#workload">2. Workload</a></li>
+        <li><a href="#benchmark">3. Benchmark</a></li>
+        <li><a href="#ddp">4. DDP model</a></li>
+        <li><a href="#systems">5. Systems</a></li>
+        <li><a href="#protocol">6. Protocol</a></li>
+        <li><a href="#limitations">7. Limitations</a></li>
+        <li><a href="#reproducibility">Reproducibility</a></li>
+      </ol>
+    </aside>
+
+    <article class="paper">
+      <section id="abstract" class="abstract">
+        <h2>Abstract</h2>
+        <p>Distributed training is often presented as a GPU-count problem, although geospatial workloads frequently stall in decoding, temporal sampling, host-to-device transfer, validation stitching or collective communication. This note separates three evidence layers for a 1,947,456-parameter multimodal crop model: a historical 50-epoch experiment measured on one RTX 4080, a new compute-only training-step benchmark on the same GPU class, and analytical DistributedDataParallel (DDP) scaling scenarios. AMP FP16 produced measured compute throughput of 40.8 samples/s at batch 1 and 54.3 samples/s at batch 4, compared with 33.4 and 38.1 samples/s in FP32. The historical train-plus-validation epoch median was 161.76 s; this timing includes real geospatial reads, tiled validation and metric aggregation but excludes post-epoch checkpointing and tracking. No multi-GPU hardware was available; consequently, the DDP curves are mathematical scenarios, not empirical speedups.</p>
+      </section>
+
+      <section id="evidence">
+        <h2>1. Evidence before speedup</h2>
+        <p>A useful scaling study starts by labelling evidence, not by drawing an ideal line through unmeasured GPU counts. This article uses three categories:</p>
+        <dl class="definition-list">
+          <dt>Measured run</dt><dd>A completed 50-epoch training and validation run on an RTX 4080 with pinned source, data revision and W&amp;B history.</dd>
+          <dt>Measured microbenchmark</dt><dd>Synthetic tensors resident on the RTX 4080, exercising the full model, weighted loss, backward pass, gradient clipping and AdamW update.</dd>
+          <dt>Analytical scenario</dt><dd>Amdahl and ring all-reduce equations used to define expectations and failure conditions. These are not measured DDP results.</dd>
+        </dl>
+        <div class="callout">
+          <strong>No fabricated multi-GPU benchmark</strong>
+          <p>The available system contains one RTX 4080. Claims about two, four or eight GPUs are therefore limited to equations and pre-registered measurement requirements. The historical profile-level claim of 3.9 times throughput is not used because its raw benchmark artefacts are unavailable.</p>
+        </div>
+      </section>
+
+      <section id="workload">
+        <h2>2. Workload and tensor pressure</h2>
+        <p>The workload is the Sentinel-first crop-intelligence model from research note 001. One training sample contains 16 Sentinel-2 observations with 10 bands, two four-date Sentinel-1 orbit sequences with VV and VH, 10 m semantic and parcel targets, and a three-channel SPOT target on a 320&times;320 high grid.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Component</th><th>Tensor or configuration</th></tr></thead>
+            <tbody>
+              <tr><td>Sentinel-2</td><td><code>[B,16,10,32,32]</code></td></tr>
+              <tr><td>Sentinel-1 ascending / descending</td><td>Two tensors of <code>[B,4,2,32,32]</code></td></tr>
+              <tr><td>High-grid RGB target</td><td><code>[B,3,320,320]</code></td></tr>
+              <tr><td>Model</td><td>1,947,456 parameters; temporal Transformer, FPN and &times;10 detail decoder</td></tr>
+              <tr><td>Optimisation</td><td>AdamW; gradient norm clipped to 1.0; FP32 or AMP FP16</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>High-grid activations, not parameter storage, dominate this compact model. FP32 parameters alone require approximately 7.43 MiB. AdamW parameter, gradient and optimiser-state storage is still small relative to feature maps, high-grid logits and loss intermediates.</p>
+
+        <h3>Two timing scopes</h3>
+        <p>The historical epoch timer includes training, complete validation, SPOT reads, tiled inference and metric aggregation. It excludes checkpoint writing and post-epoch W&amp;B logging. The new microbenchmark excludes all data loading and validation. It measures a complete optimisation step with inputs and targets already on the GPU. These scopes answer different questions:</p>
+        <ul>
+          <li>The end-to-end run asks how long the scientific experiment took.</li>
+          <li>The microbenchmark asks how efficiently one GPU executes the model and loss at each batch and precision.</li>
+        </ul>
+      </section>
+
+      <section id="benchmark">
+        <h2>3. Measured single-GPU benchmarks</h2>
+        <h3>Historical end-to-end run</h3>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Hardware</th><td>NVIDIA GeForce RTX 4080, 16 GB</td></tr>
+              <tr><th>Software</th><td>PyTorch 2.6.0+cu124; CUDA 12.4; cuDNN 9.1</td></tr>
+              <tr><th>Data</th><td>1,455 training patches; 482 validation patches</td></tr>
+              <tr><th>Protocol</th><td>Batch 1; AMP FP16; 50 epochs; four workers</td></tr>
+              <tr><th>Median epoch</th><td>161.76 s</td></tr>
+              <tr><th>Timed train and validation</th><td>2.250 h</td></tr>
+              <tr><th>End-to-end W&amp;B runtime</th><td>2.261 h</td></tr>
+              <tr><th>Epoch-50 PyTorch peak since reset</th><td>0.826 GiB allocated; 1.529 GiB reserved</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="paper-figure">
+          <a href="quality_by_epoch_budget.svg" target="_blank" rel="noopener">
+            <img src="quality_by_epoch_budget.svg" alt="Measured best validation macro IoU available at each epoch of the 50-epoch run" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 1.</strong> Best checkpoint quality continued improving near the budget boundary. The best macro IoU, 0.5112, occurred at epoch 49; the run does not demonstrate convergence.</figcaption>
+        </figure>
+
+        <h3>Compute-only benchmark</h3>
+        <p>Each configuration used 10 warm-up steps and 30 measured steps. CUDA was synchronised after every step. Throughput is computed from median step latency. Synthetic tensors remove storage variance but do not represent end-to-end data throughput.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Precision</th><th>Batch</th><th>Median step</th><th>p95 step</th><th>Samples/s</th><th>Peak GiB</th></tr></thead>
+            <tbody>
+              <tr><td>FP32</td><td>1</td><td>29.91 ms</td><td>30.43 ms</td><td>33.4</td><td>0.87</td></tr>
+              <tr><td>FP32</td><td>2</td><td>54.97 ms</td><td>55.38 ms</td><td>36.4</td><td>1.68</td></tr>
+              <tr><td>FP32</td><td>4</td><td>105.00 ms</td><td>105.44 ms</td><td>38.1</td><td>3.29</td></tr>
+              <tr><td>AMP FP16</td><td>1</td><td>24.52 ms</td><td>25.49 ms</td><td>40.8</td><td>0.67</td></tr>
+              <tr><td>AMP FP16</td><td>2</td><td>39.20 ms</td><td>39.82 ms</td><td>51.0</td><td>1.28</td></tr>
+              <tr><td>AMP FP16</td><td>4</td><td>73.65 ms</td><td>74.94 ms</td><td>54.3</td><td>2.50</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="paper-figure">
+          <a href="throughput_by_batch.svg" target="_blank" rel="noopener">
+            <img src="throughput_by_batch.svg" alt="Measured FP32 and AMP FP16 throughput at batch sizes one, two and four" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 2.</strong> In these 30 measured steps, AMP FP16 produced 22.0% higher median-derived throughput at batch 1, 40.2% at batch 2 and 42.6% at batch 4. Increasing AMP batch size from 1 to 4 raised observed throughput by 33.2%; median step latency increased 3.00&times;, from 24.52 to 73.65 ms, while samples per step increased 4&times;.</figcaption>
+        </figure>
+
+        <figure class="paper-figure">
+          <a href="memory_by_batch.svg" target="_blank" rel="noopener">
+            <img src="memory_by_batch.svg" alt="Measured FP32 and AMP FP16 peak allocated GPU memory at batch sizes one, two and four" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 3.</strong> AMP reduced peak allocated memory by 22.7% to 24.0% across the tested batches. Batch-4 AMP used 2.50 GiB compared with 3.29 GiB for FP32.</figcaption>
+        </figure>
+
+        <h3>Interpretation</h3>
+        <p>The microbenchmark suggests that the GPU compute path benefits from AMP and modest batching. It does not show that the complete experiment would improve by the same ratios. The historical epoch contains validation, overlap-weighted tiled inference, metrics and data-storage work that the microbenchmark intentionally excludes. A profiler must determine how much wall time each component occupies before any optimisation is credited with end-to-end speedup.</p>
+      </section>
+
+      <section id="ddp">
+        <h2>4. What DDP can and cannot scale</h2>
+        <p>For a fixed workload, define throughput <em>Q<sub>N</sub></em>, speedup <em>S<sub>N</sub></em> and parallel efficiency <em>E<sub>N</sub></em> for <em>N</em> GPUs:</p>
+        <div class="equation" role="img" aria-label="Throughput, speedup and parallel efficiency definitions">
+          Q<sub>N</sub> = samples / wall-clock time<br>
+          S<sub>N</sub> = T<sub>1</sub> / T<sub>N</sub>, &nbsp; E<sub>N</sub> = S<sub>N</sub> / N
+        </div>
+        <p>Near-linear speedup requires enough independent compute to hide gradient synchronisation and enough host throughput to feed every rank. A useful step-time decomposition is:</p>
+        <div class="equation" role="img" aria-label="Distributed training step-time decomposition">
+          T<sub>step</sub> &asymp; T<sub>input</sub> + T<sub>forward</sub> + T<sub>backward</sub> + T<sub>all-reduce</sub> + T<sub>optimiser</sub> &minus; T<sub>overlap</sub>
+        </div>
+
+        <h3>Amdahl sensitivity</h3>
+        <p>If fraction <em>s</em> of execution is serial or otherwise non-scaling, the upper bound is:</p>
+        <div class="equation" role="img" aria-label="Amdahl speedup equation">
+          S(N,s) = 1 / [s + (1 &minus; s)/N]
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>GPUs</th><th>10% serial</th><th>20% serial</th><th>35% serial</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>1.82&times; / 90.9%</td><td>1.67&times; / 83.3%</td><td>1.48&times; / 74.1%</td></tr>
+              <tr><td>4</td><td>3.08&times; / 76.9%</td><td>2.50&times; / 62.5%</td><td>1.95&times; / 48.8%</td></tr>
+              <tr><td>8</td><td>4.71&times; / 58.8%</td><td>3.33&times; / 41.7%</td><td>2.32&times; / 29.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Each cell reports speedup and efficiency. The 20% scenario reaches only 3.33&times; on eight GPUs. This is a mathematical sensitivity analysis, not a prediction that the workload has a 20% serial fraction.</p>
+
+        <figure class="paper-figure">
+          <a href="analytical_ddp_scaling.svg" target="_blank" rel="noopener">
+            <img src="analytical_ddp_scaling.svg" alt="Analytical Amdahl speedup curves for serial fractions of 10, 20 and 35 percent" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 4.</strong> Analytical Amdahl sensitivity scenarios. None of these multi-GPU points is measured. Their purpose is to show how rapidly fixed work limits useful GPU count.</figcaption>
+        </figure>
+
+        <h3>Ring all-reduce traffic</h3>
+        <p>For <em>P</em> parameters, <em>b</em> bytes per communicated gradient and <em>N</em> ranks, let <em>M = Pb</em> be the gradient payload. Ring all-reduce sends approximately the following bytes per rank and receives the same amount:</p>
+        <div class="equation" role="img" aria-label="Ring all-reduce communication volume per rank">
+          V<sub>rank</sub> &asymp; 2(N &minus; 1)Pb / N
+        </div>
+        <p>With 1,947,456 parameters and FP32 gradient communication, the raw gradient payload is 7.43 MiB. Each rank sends approximately 7.43 MiB with two ranks, 11.14 MiB with four and 13.00 MiB with eight, and receives the same volume. These are send volumes, not send-plus-receive totals. Latency, bucket scheduling, topology and overlap usually matter more than this small payload alone:</p>
+        <div class="equation" role="img" aria-label="Approximate all-reduce latency and bandwidth model">
+          T<sub>all-reduce</sub> &asymp; 2(N &minus; 1)&alpha; + [2(N &minus; 1)/N]M / B<sub>eff</sub>
+        </div>
+        <p>Here <em>&alpha;</em> is per-phase latency, <em>M</em> is gradient payload and <em>B<sub>eff</sub></em> is effective link bandwidth. Small models with short backward passes can expose collective latency because there is less computation available to overlap it.</p>
+
+        <h3>Batch semantics are part of the experiment</h3>
+        <p>The historical run uses global batch 1. A fixed-global-batch strong-scaling comparison cannot distribute one sample across multiple ordinary DDP ranks. Holding local batch 1 while increasing GPU count changes global batch to <em>N</em>, reduces optimiser updates per epoch and changes the optimisation problem. A fair scaling study must therefore compare:</p>
+        <ul>
+          <li>Equal global batch, where feasible, using matched gradient accumulation.</li>
+          <li>Equal local batch as a weak-scaling throughput experiment, with model quality re-evaluated.</li>
+          <li>Equal optimiser-update count when the global batch changes.</li>
+        </ul>
+      </section>
+
+      <section id="systems">
+        <h2>5. Geospatial systems bottlenecks</h2>
+        <h3>Input pipeline</h3>
+        <p>Remote-sensing training can combine NPY reads, GeoTIFF decoding, temporal sampling, validity masks and spatially coupled augmentation. Adding ranks multiplies demand on storage and CPU workers. If input production is slower than GPU consumption, DDP duplicates starvation rather than compute.</p>
+        <p>Measure queue wait, decode time, augmentation time, pinned-memory transfer and GPU idle gaps separately. Tune persistent workers, prefetch depth, pinned memory, non-blocking copies and local caching only after the profiler identifies the dominant term.</p>
+
+        <h3>Validation and mosaicking</h3>
+        <p>Tiled validation performs overlapping inference, logit blending, metric accumulation and high-grid diagnostics. Training throughput alone can therefore overstate end-to-end improvement. Validation must either be distributed with mathematically equivalent aggregation or timed as a separate fixed component.</p>
+
+        <h3>Numerical correctness</h3>
+        <p>AMP is a numerical intervention. Throughput is insufficient evidence unless validation metrics, overflow behaviour and gradient stability remain acceptable. At minimum, record loss-scale changes, non-finite batches, gradient norms and task metrics under FP32 and mixed precision. BF16 should be benchmarked independently on hardware with native support.</p>
+
+        <h3>Profiler questions</h3>
+        <ul>
+          <li>Does the host leave gaps between kernels?</li>
+          <li>Does all-reduce overlap the backward pass or form a terminal communication tail?</li>
+          <li>Are small kernels and launch overhead dominant?</li>
+          <li>Does validation or checkpoint I/O dominate epoch time?</li>
+          <li>Does increasing batch improve arithmetic intensity without changing model quality?</li>
+        </ul>
+      </section>
+
+      <section id="protocol">
+        <h2>6. Protocol for a publishable DDP benchmark</h2>
+        <p>A future multi-GPU result should use the same source commit, dataset revision, split, precision policy and validation code on every configuration. The following protocol is pre-registered here:</p>
+        <ol>
+          <li>Benchmark 1, 2, 4 and 8 GPUs with topology recorded by <code>nvidia-smi topo -m</code>.</li>
+          <li>Run at least five warm epochs followed by five measured epochs per configuration.</li>
+          <li>Repeat each configuration at least three times with controlled seeds.</li>
+          <li>Report training-only, validation-only and end-to-end epoch time separately.</li>
+          <li>Report median, p95 and dispersion for step latency and samples/s.</li>
+          <li>Record GPU utilisation, power, peak memory, data-loader wait and NCCL collective time.</li>
+          <li>Compare equal-global-batch and equal-local-batch protocols explicitly.</li>
+          <li>Test model-quality equivalence rather than assuming that throughput preserves optimisation.</li>
+        </ol>
+
+        <h3>Energy and cost</h3>
+        <p>Runtime alone does not determine efficiency. If power samples <em>P(t)</em> and cloud prices are available:</p>
+        <div class="equation" role="img" aria-label="Energy and cost to solution equations">
+          E<sub>run</sub> = &int;<sub>0</sub><sup>T</sup> P(t)dt<br>
+          C<sub>run</sub> = T<sub>hours</sub>C<sub>hour</sub>
+        </div>
+        <p>Report system-boundary assumptions. GPU board power does not include CPUs, storage, networking or cooling, and list price is not equivalent to realised cloud cost.</p>
+      </section>
+
+      <section id="limitations">
+        <h2>7. Limitations</h2>
+        <ul>
+          <li>The historical run and new microbenchmark use one RTX 4080; no empirical DDP scaling is reported.</li>
+          <li>The microbenchmark uses synthetic resident tensors and excludes geospatial I/O, augmentation and validation.</li>
+          <li>Only 30 timed steps are measured per microbenchmark configuration.</li>
+          <li>FP32 and AMP are compared for performance and memory, not task-metric equivalence.</li>
+          <li>The historical run and microbenchmark were executed at different times and are not a timing decomposition of one execution.</li>
+          <li>Amdahl scenarios omit topology-specific NCCL behaviour, stragglers, contention and failure recovery.</li>
+        </ul>
+      </section>
+
+      <section id="reproducibility">
+        <h2>Reproducibility statement</h2>
+        <p>The article includes the compact historical evidence, raw microbenchmark output, benchmark harness and dependency-free chart generator. The historical evidence is bound to training commit <code>4ecb848d3e8200cf3c8dbd7795b09193fae44d53</code>, dataset revision <code>bd796b56304f57628966f9552afc286ad47f2133</code> and W&amp;B run <code>team-khlaifiabilel/neuralq-crop-foundation/04tbj3je</code>. The new microbenchmark imports the clean v2.1.0 source commit <code>2b34ef4b60744c11e495324e89882402d8d5d6f6</code>. Its JSON records the benchmark-script SHA-256, invocation, hostname, GPU index, driver, power limit and persistence mode.</p>
+        <div class="equation left"><code>PYTHONPATH=/path/to/v2.1.0 python benchmark_single_gpu.py --output single_gpu_benchmark.json --warmup 10 --iterations 30 --batch-sizes 1 2 4</code></div>
+        <div class="article-actions">
+          <a class="btn btn-solid" href="single_gpu_benchmark.json">Measured benchmark JSON</a>
+          <a class="btn" href="historical_benchmark.json">Historical evidence JSON</a>
+          <a class="btn" href="benchmark_single_gpu.py">Benchmark script</a>
+          <a class="btn" href="generate_charts.py">Chart generator</a>
+          <a class="btn" href="../../">Back to portfolio</a>
+        </div>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>&copy; <span id="year">2026</span> Bilel Khlaifia</p>
+    <p class="foot-note">Research note 002 &middot; Measured and modelled evidence labelled separately</p>
+  </div>
+</footer>
+
+<script src="../../script.js" defer></script>
+</body>
+</html>

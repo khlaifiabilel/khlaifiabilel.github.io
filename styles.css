@@ -389,6 +389,8 @@ a { color: inherit; }
 
 /* ---------- featured writing ---------- */
 
+.blog-list { display: grid; gap: 24px; }
+
 .feature-post {
   display: grid;
   grid-template-columns: 350px minmax(0, 1fr);
@@ -433,6 +435,18 @@ a { color: inherit; }
 }
 
 .feature-visual:hover img { transform: scale(1.02); }
+
+.feature-chart {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.feature-chart > img {
+  width: 100%;
+  height: auto;
+  background: #fff;
+}
 
 .feature-tile > span {
   position: absolute;

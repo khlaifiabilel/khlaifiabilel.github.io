@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+<title id="title">Checkpoint quality versus training budget</title>
+<desc id="desc">Measured historical run; best validation macro IoU available by each epoch</desc>
+<style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub{font-size:11px;fill:#666}.tick{font-size:10px;fill:#666}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}.axis{stroke:#101010;stroke-width:1.3}.line{fill:none;stroke-width:2.5}.dash{stroke-dasharray:6 5}</style>
+<rect width="760" height="430" fill="#ffffff"/>
+<text x="42" y="35" class="title">Checkpoint quality versus training budget</text>
+<text x="42" y="55" class="sub">Measured historical run; best validation macro IoU available by each epoch</text>
+<line x1="72" y1="355.0" x2="712" y2="355.0" class="grid"/>
+<text x="62" y="359.0" text-anchor="end" class="tick">0.1</text>
+<line x1="72" y1="296.1" x2="712" y2="296.1" class="grid"/>
+<text x="62" y="300.1" text-anchor="end" class="tick">0.2</text>
+<line x1="72" y1="237.2" x2="712" y2="237.2" class="grid"/>
+<text x="62" y="241.2" text-anchor="end" class="tick">0.3</text>
+<line x1="72" y1="178.3" x2="712" y2="178.3" class="grid"/>
+<text x="62" y="182.3" text-anchor="end" class="tick">0.4</text>
+<line x1="72" y1="119.4" x2="712" y2="119.4" class="grid"/>
+<text x="62" y="123.4" text-anchor="end" class="tick">0.5</text>
+<path d="M 72.0 343.7 L 85.1 307.7 L 98.1 300.0 L 111.2 274.3 L 124.2 263.0 L 137.3 251.4 L 150.4 247.6 L 163.4 231.8 L 176.5 228.5 L 189.6 219.4 L 202.6 212.6 L 215.7 203.3 L 228.7 203.3 L 241.8 198.5 L 254.9 192.4 L 267.9 192.4 L 281.0 187.8 L 294.0 187.0 L 307.1 178.3 L 320.2 178.3 L 333.2 178.3 L 346.3 170.8 L 359.3 164.5 L 372.4 164.5 L 385.5 161.3 L 398.5 159.9 L 411.6 156.0 L 424.7 156.0 L 437.7 150.9 L 450.8 150.9 L 463.8 150.9 L 476.9 137.4 L 490.0 137.4 L 503.0 134.8 L 516.1 134.8 L 529.1 134.8 L 542.2 134.8 L 555.3 134.8 L 568.3 134.8 L 581.4 134.8 L 594.4 129.3 L 607.5 125.1 L 620.6 125.1 L 633.6 125.1 L 646.7 125.1 L 659.8 125.1 L 672.8 125.1 L 685.9 122.3 L 698.9 112.8 L 712.0 112.8" class="line" stroke="#15803d"/>
+<text x="72.0" y="377" text-anchor="middle" class="tick">1</text>
+<text x="189.6" y="377" text-anchor="middle" class="tick">10</text>
+<text x="320.2" y="377" text-anchor="middle" class="tick">20</text>
+<text x="450.8" y="377" text-anchor="middle" class="tick">30</text>
+<text x="581.4" y="377" text-anchor="middle" class="tick">40</text>
+<text x="712.0" y="377" text-anchor="middle" class="tick">50</text>
+<circle cx="698.9" cy="112.8" r="5" fill="#15803d"/>
+<text x="690.9" y="100.8" text-anchor="end" class="value">Best 0.5112 at epoch 49</text>
+<text x="392" y="407" text-anchor="middle" class="label">Epoch budget</text>
+<text x="18" y="230" transform="rotate(-90 18 230)" class="label">Best available macro IoU</text>
+</svg>
