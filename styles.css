@@ -517,6 +517,7 @@ a { color: inherit; }
 .paper h3 { margin: 34px 0 12px; font-size: 20px; letter-spacing: -.015em; }
 .paper p { margin: 0 0 20px; }
 .paper a { text-underline-offset: 3px; }
+.paper code { overflow-wrap: anywhere; }
 .paper ul, .paper ol { margin: 0 0 24px; padding-left: 22px; }
 .paper li { margin-bottom: 8px; }
 .paper li::marker { color: var(--fg-faint); }

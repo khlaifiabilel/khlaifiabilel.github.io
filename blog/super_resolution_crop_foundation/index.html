@@ -70,7 +70,7 @@
       <div class="article-byline">
         <span>Bilel Khlaifia</span>
         <time datetime="2026-07-31">31 July 2026</time>
-        <span>Approximately 18 min read</span>
+        <span>Approximately 20 min read</span>
       </div>
     </div>
   </header>
@@ -94,7 +94,7 @@
     <article class="paper">
       <section id="abstract" class="abstract">
         <h2>Abstract</h2>
-        <p>Crop mapping from Earth-observation time series has two competing demands: temporally rich but spatially coarse inputs, and parcel-scale outputs whose apparent precision must not exceed their evidence. I describe a compact 1.95M-parameter architecture that encodes Sentinel-2 and dual-orbit Sentinel-1 sequences, fuses valid modalities spatially, and jointly predicts 10 m crop semantics, boundaries and tile-level crop presence. A constrained decoder also produces RGB, semantic and boundary layers on a 1 m storage grid. These layers are explicitly model-derived: only 10 m semantic labels are available, and the optical reference has approximately 1.5 m ground sampling distance. On one seed and one exposed PASTIS fold, the finalized internal benchmark reaches 0.4879 macro IoU and 0.8298 boundary F1 at a one-pixel tolerance. The experiment is neither a geographically held-out evaluation nor evidence of state-of-the-art performance.</p>
+        <p>Crop mapping from Earth-observation time series has two competing demands: temporally rich but spatially coarse inputs, and parcel-scale outputs whose apparent precision must not exceed their evidence. I describe a compact 1,947,456-parameter architecture that encodes Sentinel-2 and dual-orbit Sentinel-1 sequences, fuses valid modalities spatially, and jointly predicts 10 m crop semantics, boundaries and tile-level crop presence. A constrained decoder also produces RGB, semantic and boundary layers on a 1 m storage grid. These layers are explicitly model-derived: only 10 m semantic labels are available, and the optical reference has approximately 1.5 m ground sampling distance. On one seed and one exposed PASTIS fold, the v2.0.0 checkpoint reaches 0.4879 macro IoU and 0.8298 patch-macro boundary F1 at a one-pixel tolerance. These metrics are inherited, not re-measured, by the v2.1.0 source-maintenance release. The experiment is neither a geographically held-out evaluation nor evidence of state-of-the-art performance.</p>
       </section>
 
       <section id="problem">
@@ -102,7 +102,7 @@
         <p>Agricultural parcels are temporal objects. Their spectral signatures evolve through sowing, growth and harvest, while clouds can obscure any single optical acquisition. Sentinel-2 provides the multispectral signal, and Sentinel-1 contributes cloud-independent radar observations. Both are informative, but the labels and core imagery in this experiment live on a 10 m grid.</p>
         <p>The central design question is therefore not simply how to upsample. It is how to preserve a scientifically defensible relationship between direct observations and high-grid products. The system separates two claims:</p>
         <ul>
-          <li><strong>Direct evidence:</strong> 19-class semantics, parcel boundaries and crop presence supervised on the 10 m PASTIS grid.</li>
+          <li><strong>Coarse-grid supervision:</strong> 19-class semantics are labeled on the 10 m PASTIS grid; boundary targets are derived from four-neighbour parcel-instance transitions, and 18 crop-presence targets are derived from the occurrence of semantic classes 1&ndash;18.</li>
           <li><strong>Model-derived detail:</strong> RGB and logits represented on a 1 m storage grid, constrained to remain consistent with their 10 m anchors.</li>
         </ul>
         <div class="callout">
@@ -111,7 +111,7 @@
         </div>
 
         <h3>Relation to prior work</h3>
-        <p>PASTIS established panoptic crop mapping from optical satellite time series with convolutional temporal attention; PASTIS-R extended that setting to paired Sentinel-1 and Sentinel-2 observations. OmniSat studied self-supervised fusion across Earth-observation modalities, while MAESTRO introduced masked autoencoding across multimodal, multitemporal and multispectral inputs. This implementation shares the multimodal motivation but uses a compact supervised temporal-Transformer/FPN architecture. It does not load a MAESTRO pretrained encoder, and the present experiment does not compare against these systems under a common protocol. The contribution claimed here is therefore an implemented design and evidence audit, not algorithmic novelty or state-of-the-art ranking.</p>
+        <p>PASTIS [2] established panoptic crop mapping from optical satellite time series with convolutional temporal attention; PASTIS-R [3] extended that setting to paired Sentinel-1 and Sentinel-2 observations. OmniSat [4] studied self-supervised fusion across Earth-observation modalities, while MAESTRO [1] introduced masked autoencoding across multimodal, multitemporal and multispectral inputs. This implementation shares the multimodal motivation but uses a compact supervised temporal-Transformer/FPN architecture. It does not load a MAESTRO pretrained encoder, and the present experiment does not compare against these systems under a common protocol. The contribution claimed here is therefore an implemented design and evidence audit, not algorithmic novelty or state-of-the-art ranking.</p>
       </section>
 
       <figure class="paper-figure">
@@ -138,7 +138,7 @@
 
       <section id="data">
         <h2>2. Data and supervision</h2>
-        <p>The experiment uses 2,433 complete records from AgriSR-PASTIS, built from PASTIS, PASTIS-R and PASTIS-HD assets. Records are partitioned by the standard five-fold metadata. Folds 1&ndash;3 train the model, fold 4 selects checkpoints, and fold 5 forms the internal benchmark.</p>
+        <p>The experiment uses 2,433 complete records from AgriSR-PASTIS, built from PASTIS, PASTIS-R and PASTIS-HD assets. The audited dataset snapshot is <code>Khlaifiabilel/AgriSR-PASTIS</code> revision <code>bd796b56304f57628966f9552afc286ad47f2133</code>; split-manifest and resolved-record hashes are retained in the benchmark report. Records are partitioned by the standard five-fold metadata. Folds 1&ndash;3 train the model, fold 4 selects checkpoints, and fold 5 forms the internal benchmark.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Source</th><th>Raw shape</th><th>Role</th></tr></thead>
@@ -156,7 +156,7 @@
         <p>Sentinel-2 values are divided by 10,000. Sentinel-1 arrays contain VV, VH and a redundant VV&minus;VH channel in decibels; the redundant channel is checked with a 0.25 dB consistency tolerance, then only VV and VH are retained and divided by 20. Training dates are sampled without replacement and sorted chronologically. Validation and benchmark dates are selected deterministically at approximately even temporal intervals.</p>
         <p>Let <em>t</em> denote day of year. The temporal coordinate appended to each acquisition uses two seasonal frequencies:</p>
         <div class="equation" role="img" aria-label="Temporal encoding phi of t contains sine and cosine at annual and semiannual frequencies">
-          &phi;(t) = [sin(2&pi;t/365), cos(2&pi;t/365), sin(4&pi;t/365), cos(4&pi;t/365)]
+          &phi;(t) = [sin(2&pi;t/365.25), cos(2&pi;t/365.25), sin(4&pi;t/365.25), cos(4&pi;t/365.25)]
         </div>
         <p>Validity masks reject malformed or absent observations, but they are not cloud masks. The dataset does not provide cloud probability, shadow, snow or saturation layers. Spatial augmentation applies the same random horizontal flip, vertical flip and transpose to every modality and target so cross-sensor registration is not broken.</p>
       </section>
@@ -174,11 +174,12 @@
         <p>Sentinel-2 has a dedicated encoder. Ascending and descending Sentinel-1 use the same encoder weights, while learned orbit embeddings preserve acquisition-geometry context.</p>
 
         <h3>Validity-aware modality fusion</h3>
-        <p>A spatial gate predicts one logit per modality and pixel. Unavailable modalities are masked before the softmax, preventing their zero-filled tensors from receiving probability mass. For modality features <em>F<sub>k</sub></em> and availability <em>a<sub>k</sub></em>:</p>
+        <p>A spatial gate predicts one logit per modality and pixel. Let <em>a<sub>k,h,w</sub></em> &isin; {0,1} indicate whether modality <em>k</em> has at least one valid acquisition at pixel (<em>h,w</em>). When at least one modality is available:</p>
         <div class="equation" role="img" aria-label="Gated fusion is the sum of modality weights times modality features, with weights computed by a masked softmax">
-          &alpha;<sub>k,h,w</sub> = softmax<sub>k</sub>(g<sub>k,h,w</sub> + log a<sub>k,h,w</sub>)<br>
+          &alpha;<sub>k,h,w</sub> = a<sub>k,h,w</sub> exp(g<sub>k,h,w</sub>) / &Sigma;<sub>j</sub> a<sub>j,h,w</sub> exp(g<sub>j,h,w</sub>)<br>
           F<sub>fused</sub> = &Sigma;<sub>k &isin; {S2,A,D}</sub> &alpha;<sub>k</sub> F<sub>k</sub>
         </div>
+        <p>If every modality is invalid at a pixel, the implementation enables only the optical gate to keep the softmax defined; the corresponding all-invalid modality features remain zero. Thus absence is represented explicitly rather than treated as an ordinary zero-valued observation.</p>
         <p>The fused representation is concatenated with the optical feature and processed by a 10/20/40 m feature pyramid with lateral fusion back to 10 m. This produces three direct heads:</p>
         <ul>
           <li>19-channel semantic logits at 10 m;</li>
@@ -207,7 +208,7 @@
           D<sub>0</sub> = D &minus; U(P(D))<br>
           Y<sub>high</sub> = U(Y<sub>10m</sub>) + D<sub>0</sub>
         </div>
-        <p>Here <code>P</code> averages each 10&times;10 block and <code>U</code> repeats it. Before overlap-weighted mosaicking, averaging a high-grid block recovers its 10 m anchor exactly. The constraint applies to semantic, boundary and RGB outputs. It prevents detail from silently changing the coarse prediction, but it does not prove that the inferred within-block structure is correct.</p>
+        <p>Here <code>P</code> averages each 10&times;10 block and <code>U</code> repeats it. For RGB values and for semantic and boundary <strong>logits</strong>, <code>P(Y_high) = Y_10m</code> exactly within each model tile before overlap-weighted mosaicking. This identity does not extend through nonlinear softmax or sigmoid transforms: averaged probabilities, argmax labels and majority classes need not recover the 10 m prediction. The constraint preserves the coarse logit anchor while permitting model-derived within-block variation; it does not establish that this variation is physically correct.</p>
 
         <h3>Multi-task objective</h3>
         <p>The optimized scalar objective is a fixed weighted sum:</p>
@@ -218,6 +219,11 @@
           &nbsp;&nbsp;+ 0.10 L<sub>SPOT-boundary</sub> + 0.10 L<sub>sem-boundary</sub>.
         </div>
         <p>Semantic cross-entropy ignores void pixels. Soft Dice is averaged only across classes supported in the current batch. Boundary loss combines positive-weighted binary cross-entropy and Dice; the positive weight is estimated dynamically and clipped to [1, 50]. Crop presence uses sigmoid BCE.</p>
+        <p>For supported semantic classes <em>S</em>, probabilities <em>p</em> and one-hot targets <em>y</em>, the Dice component is:</p>
+        <div class="equation" role="img" aria-label="Semantic Dice loss averaged over supported classes">
+          L<sub>Dice</sub> = 1 &minus; (1/|S|) &Sigma;<sub>c&isin;S</sub> (2&Sigma;<sub>i</sub>p<sub>ic</sub>y<sub>ic</sub> + &epsilon;) / (&Sigma;<sub>i</sub>p<sub>ic</sub> + &Sigma;<sub>i</sub>y<sub>ic</sub> + &epsilon;), &nbsp; &epsilon; = 10<sup>&minus;6</sup>
+        </div>
+        <p>The boundary positive weight is <code>clip(N_negative / max(N_positive,1), 1, 50)</code>. Its Dice smoothing constant is 1 rather than 10<sup>&minus;6</sup>, making the sparse binary objective numerically defined when few boundary pixels occur. The multiscale SPOT reconstruction applies the Charbonnier penalty <code>&rho;(r) = sqrt(r^2 + 10^-6) - 10^-3</code> after per-image, per-band standardization.</p>
         <p>The degradation term applies a fixed Gaussian blur and average-pool decimation to the predicted high-grid RGB before a Smooth L1 comparison with the Sentinel-2 RGB anchor. SPOT reconstruction uses per-image, per-band standardization and Charbonnier penalties at scales 1, 2 and 4, supplemented by horizontal and vertical gradient agreement. SPOT edges supervise only a dilated band around low-resolution parcel boundaries. A differentiable semantic-transition map is finally matched to the high-grid boundary probability.</p>
         <p>High-grid semantics have no independent high-resolution semantic target. Their spatial organization is induced by the coarse semantic anchor, the block constraint, SPOT edge guidance and semantic-boundary consistency.</p>
       </section>
@@ -232,8 +238,13 @@
               <tr><th>Training crop</th><td>32&times;32 at 10 m; 320&times;320 high grid</td></tr>
               <tr><th>Optimizer</th><td>AdamW, learning rate 3&times;10<sup>&minus;4</sup>, weight decay 0.01</td></tr>
               <tr><th>Budget</th><td>50 epochs, batch size 1, FP16 automatic mixed precision</td></tr>
+              <tr><th>Schedule / clipping</th><td>No scheduler; global gradient norm clipped to 1.0</td></tr>
+              <tr><th>Data loading</th><td>4 workers</td></tr>
               <tr><th>Selection</th><td>Best fold-4 macro IoU</td></tr>
               <tr><th>Inference</th><td>32&times;32 tiles with 8-pixel overlap; logits blended before argmax</td></tr>
+              <tr><th>Runtime</th><td>Python 3.12.13; PyTorch 2.6.0+cu124; CUDA 12.4; cuDNN 9.1; RTX 4080</td></tr>
+              <tr><th>Measured compute</th><td>2.26 h end to end; 0.83 GiB peak allocated and 1.53 GiB peak reserved PyTorch memory</td></tr>
+              <tr><th>Determinism</th><td>Seeded initialization and sampling; bitwise-deterministic kernels not demonstrated</td></tr>
             </tbody>
           </table>
         </div>
@@ -244,7 +255,7 @@
         <div class="equation" role="img" aria-label="Intersection over union for class c equals true positives divided by true positives plus false positives plus false negatives">
           IoU<sub>c</sub> = TP<sub>c</sub> / (TP<sub>c</sub> + FP<sub>c</sub> + FN<sub>c</sub>)
         </div>
-        <p>Boundary F1 thresholds sigmoid probabilities at 0.5 and permits a one-pixel match through square max pooling, equivalent to a 10 m Chebyshev tolerance. Crop-presence F1 also uses a 0.5 threshold. Expected calibration error uses 15 confidence bins and is pixel weighted. RGB PSNR is <code>&minus;10 log10(MSE)</code> under an assumed unit data range; SSIM is a local uniform-window implementation with constants 0.01<sup>2</sup> and 0.03<sup>2</sup>.</p>
+        <p>Boundary F1 thresholds sigmoid probabilities at 0.5. Precision and recall permit matches within a 3&times;3 square dilation, corresponding to a one-pixel Chebyshev tolerance on the 10 m grid; this is not one-to-one boundary matching. F1 is computed independently for each 128&times;128 patch and macro-averaged over 496 patches, so patches rather than boundary pixels are the statistical units. Under the implementation, an empty-truth/empty-prediction patch contributes zero. Crop-presence F1 also uses a 0.5 threshold. Expected calibration error uses 15 confidence bins and is pixel weighted. RGB PSNR is <code>&minus;10 log10(MSE)</code> under an assumed unit data range; SSIM is a local uniform-window implementation with constants 0.01<sup>2</sup> and 0.03<sup>2</sup>.</p>
       </section>
 
       <section id="results">
@@ -258,7 +269,7 @@
               <tr><td>Macro IoU, including background</td><td>0.4879</td></tr>
               <tr><td>Foreground macro IoU</td><td>0.4743</td></tr>
               <tr><td>Macro F1</td><td>0.6142</td></tr>
-              <tr><td>Boundary F1, one 10 m-pixel tolerance</td><td>0.8298</td></tr>
+              <tr><td>Boundary F1, patch macro, one 10 m-pixel Chebyshev tolerance</td><td>0.8298</td></tr>
               <tr><td>Crop-presence macro / micro F1</td><td>0.2455 / 0.4607</td></tr>
               <tr><td>Pixel top-label ECE</td><td>0.0733</td></tr>
               <tr><td>SPOT diagnostic PSNR / SSIM</td><td>11.38 dB / 0.3097</td></tr>
@@ -268,21 +279,22 @@
         <h3>Class-conditional behavior</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Crop class</th><th>IoU</th></tr></thead>
+            <thead><tr><th>Crop class</th><th>10 m pixels</th><th>IoU</th></tr></thead>
             <tbody>
-              <tr><td>Corn</td><td>0.8079</td></tr>
-              <tr><td>Soft winter wheat</td><td>0.7812</td></tr>
-              <tr><td>Winter rapeseed</td><td>0.7790</td></tr>
-              <tr><td>Beet</td><td>0.7645</td></tr>
-              <tr><td>Soybeans</td><td>0.7587</td></tr>
-              <tr><td>Winter triticale</td><td>0.1294</td></tr>
-              <tr><td>Mixed cereal</td><td>0.1052</td></tr>
-              <tr><td>Sorghum</td><td>0.0184</td></tr>
+              <tr><td>Corn</td><td>620,357</td><td>0.8079</td></tr>
+              <tr><td>Soft winter wheat</td><td>580,631</td><td>0.7812</td></tr>
+              <tr><td>Winter rapeseed</td><td>157,965</td><td>0.7790</td></tr>
+              <tr><td>Beet</td><td>67,567</td><td>0.7645</td></tr>
+              <tr><td>Soybeans</td><td>71,771</td><td>0.7587</td></tr>
+              <tr><td>Winter triticale</td><td>53,892</td><td>0.1294</td></tr>
+              <tr><td>Mixed cereal</td><td>49,537</td><td>0.1052</td></tr>
+              <tr><td>Sorghum</td><td>53,295</td><td>0.0184</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Performance is strongly class dependent. Major crops exhibit substantially higher overlap than rare or visually confusable classes. Consequently, the low crop-presence macro F1 and rare-class IoUs are more informative than overall pixel accuracy for operational risk.</p>
+        <p>Performance is strongly class dependent, but support alone does not explain the ordering: beet and soybeans substantially outperform winter triticale and sorghum despite supports of the same order of magnitude. Class imbalance, label heterogeneity and spectral or phenological confusion are plausible explanations, not established causes. The low per-class IoUs and crop-presence macro F1 indicate heterogeneous operational risk more clearly than overall pixel accuracy.</p>
         <p>The SPOT metrics are diagnostics, not same-date super-resolution scores. Sensor response, atmosphere, illumination, acquisition date and registration all differ. They must not be interpreted as proof of calibrated 1 m optical reconstruction.</p>
+        <p>In a separate four-patch visualization diagnostic, model RGB was effectively tied with nearest-neighbour repetition of the Sentinel-2 RGB anchor. Because that comparison covered only four patches and no full-fold repeat, bicubic or zero-detail baseline is available, the reported PSNR/SSIM does not establish an improvement attributable to learned detail.</p>
         <div class="callout">
           <strong>Statistical interpretation</strong>
           <p>No repeated seeds, confidence intervals, hypothesis tests or common-protocol baselines are available. The table is a descriptive account of one selected checkpoint on one exposed fold; differences from external publications cannot be interpreted as statistically meaningful model comparisons.</p>
@@ -300,14 +312,28 @@
           <li><strong>Regional taxonomy:</strong> PASTIS represents metropolitan France and the French RPG taxonomy; global transfer is untested.</li>
         </ul>
         <p>Rare-crop errors can create unequal downstream outcomes. Predictions should not be treated as legal parcel boundaries or used without human and agronomic review for subsidy, insurance, credit or compliance decisions. Every high-grid export should retain provenance identifying it as model-derived.</p>
+
+        <h3>Falsifiable next experiments</h3>
+        <p>The current run cannot assign causal value to individual design choices. A defensible follow-up should pre-register matched controls and evaluate them with repeated seeds:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hypothesis</th><th>Required control</th><th>Primary test</th></tr></thead>
+            <tbody>
+              <tr><td>Radar improves mapping when optical evidence is sparse</td><td>Sentinel-2-only model with matched capacity and optimization</td><td>Paired region-bootstrap difference in foreground macro IoU, stratified by optical validity</td></tr>
+              <tr><td>SPOT guidance adds useful within-block structure</td><td>No-SPOT, zero-detail, repeat and bicubic baselines</td><td>Full-fold SPOT diagnostics plus downstream boundary metrics; not four-patch inspection</td></tr>
+              <tr><td>Zero-mean projection preserves coarse evidence without reducing utility</td><td>Unconstrained decoder with identical parameter budget</td><td>Aggregation error and task metrics before and after mosaicking</td></tr>
+              <tr><td>Temporal and multimodal gains transfer spatially</td><td>Tile- or region-held-out split, ideally across seasons</td><td>Confidence intervals over geographic units rather than pixels</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section id="reproducibility">
         <h2>7. Reproducibility statement</h2>
-        <p>The architecture, data contract, training configuration, evaluator definitions, per-class table and report hashes are versioned in the access-controlled project repository. The v2.1.0 software release recorded 64 passing tests and 81.42% line coverage.</p>
+        <p>The v2.0.0 model report records the architecture, data contract, training configuration, metric outputs and artifact hashes. The separate v2.1.0 source-maintenance release retained the same architecture, preprocessing, losses and benchmark record while recording 64 passing tests and 81.42% line coverage; these software-quality results are not additional model-performance evidence.</p>
         <div class="callout">
           <strong>Known reproducibility gap</strong>
-          <p>The exact finalized checkpoint bytes and original experiment artifact are currently unavailable; only their recorded hashes and benchmark reports remain. The reported fold-5 values therefore cannot presently be rerun from the exact weights. This is a material limitation, not a documentation detail.</p>
+          <p>The exact finalized checkpoint bytes and original experiment artifact are currently unavailable; only their recorded hashes and benchmark reports remain. The retained report binds evaluation to source committed after the complete evaluations, and its 32&times;32/8-pixel tiling arguments were documented post hoc rather than embedded in the original result JSON. The recorded launch HEAD also does not prove that the training worktree was clean. The fold-5 figures are therefore preserved historical evidence, not an exactly reconstructable execution.</p>
         </div>
         <p>The model is a new compact temporal-Transformer/FPN implementation. Although the broader NeuralQ project retains attribution and conceptual lineage from MAESTRO, this version does not load the MAESTRO masked-autoencoder encoder and should not be described as a MAESTRO fine-tune.</p>
         <div class="article-actions">
@@ -319,10 +345,12 @@
       <section id="references" class="references">
         <h2>References</h2>
         <ol>
-          <li>Labatie, A., Vaccaro, M., Lardiere, N., Garioud, A. and Gonthier, N. “MAESTRO: Masked AutoEncoders for Multimodal, Multitemporal, and Multispectral Earth Observation Data.” arXiv:2508.10894, 2025.</li>
-          <li>Sainte Fare Garnot, V. and Landrieu, L. “Panoptic Segmentation of Satellite Image Time Series with Convolutional Temporal Attention Networks.” ICCV, 2021.</li>
-          <li>Sainte Fare Garnot, V., Landrieu, L. and Chehata, N. “Multi-modal temporal attention models for crop mapping from satellite image time series.” ISPRS Journal of Photogrammetry and Remote Sensing, 2022.</li>
-          <li>Astruc, G., Gonthier, N., Mallet, C. and Landrieu, L. “OmniSat: Self-Supervised Modality Fusion for Earth Observation.” ECCV, 2024.</li>
+          <li>Labatie, A., Vaccaro, M., Lardiere, N., Garioud, A. and Gonthier, N. “MAESTRO: Masked AutoEncoders for Multimodal, Multitemporal, and Multispectral Earth Observation Data.” arXiv:2508.10894, 2025. <a href="https://arxiv.org/abs/2508.10894" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Sainte Fare Garnot, V. and Landrieu, L. “Panoptic Segmentation of Satellite Image Time Series with Convolutional Temporal Attention Networks.” ICCV, 2021. <a href="https://openaccess.thecvf.com/content/ICCV2021/html/Garnot_Panoptic_Segmentation_of_Satellite_Image_Time_Series_With_Convolutional_Temporal_ICCV_2021_paper.html" target="_blank" rel="noopener">Paper</a>.</li>
+          <li>Sainte Fare Garnot, V., Landrieu, L. and Chehata, N. “Multi-modal temporal attention models for crop mapping from satellite image time series.” ISPRS Journal of Photogrammetry and Remote Sensing, 2022. <a href="https://doi.org/10.1016/j.isprsjprs.2022.03.012" target="_blank" rel="noopener">DOI</a>.</li>
+          <li>Astruc, G., Gonthier, N., Mallet, C. and Landrieu, L. “OmniSat: Self-Supervised Modality Fusion for Earth Observation.” ECCV, 2024. <a href="https://arxiv.org/abs/2404.08351" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>NeuralQ. “NeuralQ Crop Foundation,” software release v2.1.0, commit <code>2b34ef4b60744c11e495324e89882402d8d5d6f6</code>, 2026. <a href="https://github.com/NeuralQ/neuralq-crop-foundation/releases/tag/v2.1.0" target="_blank" rel="noopener">Release record</a>.</li>
+          <li>Khlaifiabilel. “AgriSR-PASTIS,” dataset revision <code>bd796b56304f57628966f9552afc286ad47f2133</code>. <a href="https://huggingface.co/datasets/Khlaifiabilel/AgriSR-PASTIS" target="_blank" rel="noopener">Dataset card</a>.</li>
         </ol>
         <p><strong>Data attribution.</strong> Contains modified Copernicus Sentinel data processed by THEIA/CNES, French RPG parcel annotations from IGN, and SPOT open data distributed by Dataterra Dinamis. Dataset assets retain their respective terms and Licence Ouverte/Open License 2.0 attribution requirements.</p>
       </section>
