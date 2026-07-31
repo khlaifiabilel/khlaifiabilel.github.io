@@ -101,6 +101,8 @@ sips -c 630 1200 og.png --out og.png
 Semantic landmarks, a skip link, visible focus rings, `aria-pressed` on the
 toggle, and `prefers-reduced-motion` support. Contrast is maximal by design.
 
-## Licence
+## Licence and content rights
 
-Code is MIT. Written content, CV text and imagery are © Bilel Khlaifia.
+The root [`LICENSE`](LICENSE) applies the MIT License to the site's source code
+and build tooling. As stated in that file, written content, CV text, and imagery
+remain copyright Bilel Khlaifia, all rights reserved.
