@@ -1,6 +1,6 @@
 # khlaifiabilel.github.io
 
-Personal portfolio for Bilel Khlaifia — AI / Machine Learning Engineer.
+Personal portfolio for Bilel Khlaifia, AI / Machine Learning Engineer.
 
 Live at **https://khlaifiabilel.github.io**
 
@@ -48,7 +48,7 @@ python3 -m http.server 8000
 
 **Location** is at `<span class="v" id="location">` in the hero.
 
-**Colours** are CSS custom properties at the top of `styles.css` — `:root` for
+**Colours** are CSS custom properties at the top of `styles.css`: `:root` for
 light, `[data-theme="dark"]` for dark. The palette is intentionally pure
 monochrome; changing `--fg` and `--bg` restyles the whole site.
 
@@ -92,7 +92,7 @@ sips -c 630 1200 og.png --out og.png
 - **Star counts** are fetched once from the public GitHub API and cached in
   `sessionStorage` for six hours. The API allows 60 unauthenticated requests per
   hour per IP; on failure the page silently keeps the hardcoded numbers.
-- **Progressive enhancement** — with JavaScript disabled the page renders fully;
+- **Progressive enhancement:** with JavaScript disabled the page renders fully;
   only the toggle, nav highlighting and live stars are lost.
 - **Print** styles are included, so the page prints as a clean CV.
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   Bilel Khlaifia — portfolio behaviour
+   Bilel Khlaifia | portfolio behaviour
    Progressive enhancement only. The page works with JS disabled.
    ============================================================ */
 
@@ -116,7 +116,7 @@
         } catch (e) { /* ignore */ }
       })
       .catch(function () {
-        /* keep the server-rendered numbers — no visible failure */
+        /* Keep the server-rendered numbers; no visible failure. */
       });
   }
 })();
