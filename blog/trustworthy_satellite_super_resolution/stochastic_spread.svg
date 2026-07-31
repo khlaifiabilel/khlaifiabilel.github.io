@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
+<title id="title">Stochastic spread and residual association</title>
+<desc id="desc">Five stochastic passes at 25 DDIM steps; spread is not calibrated uncertainty</desc>
+<style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub{font-size:11px;fill:#666}.tick{font-size:10px;fill:#666}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}</style>
+<rect width="760" height="430" fill="#ffffff"/>
+<text x="42" y="35" class="title">Stochastic spread and residual association</text>
+<text x="42" y="55" class="sub">Five stochastic passes at 25 DDIM steps; spread is not calibrated uncertainty</text>
+<line x1="72" y1="350.0" x2="712" y2="350.0" class="grid"/>
+<text x="62" y="354.0" text-anchor="end" class="tick">0.00</text>
+<line x1="72" y1="298.0" x2="712" y2="298.0" class="grid"/>
+<text x="62" y="302.0" text-anchor="end" class="tick">0.01</text>
+<line x1="72" y1="246.0" x2="712" y2="246.0" class="grid"/>
+<text x="62" y="250.0" text-anchor="end" class="tick">0.02</text>
+<line x1="72" y1="194.0" x2="712" y2="194.0" class="grid"/>
+<text x="62" y="198.0" text-anchor="end" class="tick">0.03</text>
+<line x1="72" y1="142.0" x2="712" y2="142.0" class="grid"/>
+<text x="62" y="146.0" text-anchor="end" class="tick">0.04</text>
+<line x1="72" y1="90.0" x2="712" y2="90.0" class="grid"/>
+<text x="62" y="94.0" text-anchor="end" class="tick">0.05</text>
+<rect x="201.2" y="320.6" width="44" height="29.4" fill="#2563eb"/>
+<text x="223.2" y="313.6" text-anchor="middle" class="value">0.006</text>
+<rect x="257.2" y="295.0" width="44" height="55.0" fill="#d97706"/>
+<text x="279.2" y="288.0" text-anchor="middle" class="value">0.011</text>
+<text x="251.2" y="374" text-anchor="middle" class="label">Rural</text>
+<text x="251.2" y="390" text-anchor="middle" class="tick">spread-residual r = 0.37</text>
+<rect x="482.8" y="248.2" width="44" height="101.8" fill="#2563eb"/>
+<text x="504.8" y="241.2" text-anchor="middle" class="value">0.020</text>
+<rect x="538.8" y="107.4" width="44" height="242.6" fill="#d97706"/>
+<text x="560.8" y="100.4" text-anchor="middle" class="value">0.047</text>
+<text x="532.8" y="374" text-anchor="middle" class="label">Urban</text>
+<text x="532.8" y="390" text-anchor="middle" class="tick">spread-residual r = 0.42</text>
+<rect x="555" y="404" width="11" height="11" fill="#2563eb"/><text x="572" y="413" class="tick">Mean 2σ spread</text>
+<rect x="650" y="404" width="11" height="11" fill="#d97706"/><text x="667" y="413" class="tick">p95</text>
+</svg>

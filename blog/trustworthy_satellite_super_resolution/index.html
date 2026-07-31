@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beyond PSNR | Bilel Khlaifia</title>
+<meta name="description" content="A scientific evaluation of observation consistency, spectral drift, learned detail and stochastic spread in Sentinel-2 super-resolution.">
+<meta name="author" content="Bilel Khlaifia">
+<link rel="canonical" href="https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/">
+<meta property="og:title" content="Beyond PSNR: evaluating satellite super-resolution without high-resolution truth">
+<meta property="og:description" content="Observation consistency, spectral drift, learned detail and stochastic spread in Sentinel-2 super-resolution.">
+<meta property="og:image" content="https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/social-preview.png">
+<meta property="article:published_time" content="2026-07-31">
+<meta property="article:author" content="Bilel Khlaifia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Beyond PSNR: evaluating satellite super-resolution">
+<meta name="twitter:description" content="A ground-truth-aware framework for evaluating generated satellite detail.">
+<meta name="twitter:image" content="https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/social-preview.png">
+
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Beyond PSNR: evaluating satellite super-resolution without high-resolution truth",
+  "description": "A scientific evaluation of observation consistency, spectral drift, learned detail and stochastic spread in Sentinel-2 super-resolution.",
+  "datePublished": "2026-07-31",
+  "dateModified": "2026-07-31",
+  "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
+  "image": "https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/social-preview.png",
+  "url": "https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/",
+  "keywords": ["Sentinel-2", "super-resolution", "spectral fidelity", "uncertainty", "hallucination", "remote sensing"]
+}
+</script>
+</head>
+<body class="article-shell">
+<a class="skip" href="#article">Skip to article</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark" aria-hidden="true">BK</span>
+      <span class="brand-name">Bilel Khlaifia</span>
+    </a>
+    <nav class="nav" aria-label="Article">
+      <a href="#problem">Problem</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#results">Results</a>
+      <a href="#spread">Spread</a>
+      <a href="#limits">Limits</a>
+    </nav>
+    <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <span class="toggle-dot" aria-hidden="true"></span>
+      <span class="toggle-text">Invert</span>
+    </button>
+  </div>
+</header>
+
+<main id="article">
+  <header class="article-head">
+    <div class="wrap">
+      <p class="article-kicker">Research note 003 &middot; Trustworthy remote sensing</p>
+      <h1 class="article-title">Beyond PSNR</h1>
+      <p class="article-deck">Evaluating satellite super-resolution through observation consistency, spectral drift and stochastic spread when independent high-resolution truth is absent.</p>
+      <div class="article-byline">
+        <span>Bilel Khlaifia</span>
+        <time datetime="2026-07-31">31 July 2026</time>
+        <span>Approximately 14-minute read</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+    <aside class="article-toc" aria-label="Contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#problem">1. Inverse problem</a></li>
+        <li><a href="#evidence">2. Evidence</a></li>
+        <li><a href="#protocol">3. Protocol</a></li>
+        <li><a href="#results">4. Results</a></li>
+        <li><a href="#spread">5. Spread</a></li>
+        <li><a href="#framework">6. Full framework</a></li>
+        <li><a href="#limits">7. Limitations</a></li>
+        <li><a href="#reproducibility">Reproducibility</a></li>
+      </ol>
+    </aside>
+
+    <article class="paper">
+      <section id="abstract" class="abstract">
+        <h2>Abstract</h2>
+        <p>Sharp satellite imagery is not necessarily accurate satellite imagery. This note evaluates a four-band &times;4 Sentinel-2 latent-diffusion release without pretending that its two bundled examples provide high-resolution ground truth. The analysis measures whether box-averaged output remains consistent with the observed 10 m input, how spectral angle and NDVI change, how strongly learned output departs from bilinear interpolation, and where five stochastic passes disagree. The urban example exhibits larger drift than the rural example: mean spectral angle is 2.03° versus 0.83°, p95 absolute NDVI error is 0.085 versus 0.031, and high-frequency gradient energy is 7.05&times; versus 3.23&times; the bilinear baseline. These values diagnose behaviour on two examples. They do not establish 2.5 m resolving power, reconstruction accuracy, calibrated uncertainty or population-level performance.</p>
+      </section>
+
+      <section id="problem">
+        <h2>1. Super-resolution is an inverse problem</h2>
+        <p>A low-resolution observation can be represented as:</p>
+        <div class="equation" role="img" aria-label="Low-resolution observation equals degradation of high-resolution scene plus noise">
+          y = D(x) + n, &nbsp; x&#770; = f<sub>&theta;</sub>(y)
+        </div>
+        <p>Here <em>x</em> is the unknown high-resolution scene, <em>D</em> is the sensor and sampling process, <em>n</em> is noise and model mismatch, and <em>f<sub>&theta;</sub></em> produces an estimate <em>x&#770;</em>. The inverse is non-unique: multiple high-resolution scenes can map to nearly the same observation.</p>
+        <div class="equation" role="img" aria-label="Two distinct high-resolution scenes can produce similar low-resolution observations">
+          D(x<sub>1</sub>) &asymp; D(x<sub>2</sub>) &nbsp; while &nbsp; x<sub>1</sub> &ne; x<sub>2</sub>
+        </div>
+        <p>A generative model can therefore add plausible high-frequency structure without recovering what the sensor observed. Visual sharpness is evidence of model behaviour, not evidence of physical truth.</p>
+
+        <h3>Why PSNR and SSIM are unavailable here</h3>
+        <p>PSNR, SSIM and ERGAS require a valid co-registered high-resolution reference under a declared radiometric and spatial contract. The bundled examples contain only four-band Sentinel-2 inputs. Computing those metrics against interpolation or against the input itself would answer the wrong scientific question. This article reports no PSNR, SSIM, ERGAS or true 2.5 m accuracy.</p>
+      </section>
+
+      <section id="evidence">
+        <h2>2. Evidence contract</h2>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Inputs</th><td>Two bundled 128&times;128 Sentinel-2 examples: rural and urban</td></tr>
+              <tr><th>Bands</th><td>B04 red, B03 green, B02 blue and B08 near-infrared</td></tr>
+              <tr><th>Output</th><td>Four-band 512&times;512 model product on a nominal 2.5 m grid</td></tr>
+              <tr><th>Displayed learned output</th><td>Latent diffusion, 100 DDIM steps, &eta; = 0.95, followed by per-band histogram matching</td></tr>
+              <tr><th>Spread experiment</th><td>Five 25-step passes, &eta; = 0.0, independently seeded initial latents</td></tr>
+              <tr><th>Baseline</th><td>Bilinear &times;4 interpolation</td></tr>
+              <tr><th>High-resolution truth</th><td>None</td></tr>
+              <tr><th>Scope</th><td>Case study and observation-consistency audit, not a dataset benchmark</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>What “2.5 m grid” means</strong>
+          <p>The output array has four times the linear sampling frequency in each axis, corresponding to sixteen times as many array samples per unit area and a nominal 2.5 m sample spacing if the input is on a 10 m grid. This does not establish native 2.5 m information, a 2.5 m modulation transfer function or 2.5 m resolving capability.</p>
+        </div>
+      </section>
+
+      <figure class="paper-figure">
+        <a href="comparison_panel.png" target="_blank" rel="noopener">
+          <img src="comparison_panel.png" alt="Rural and urban Sentinel-2 inputs, bilinear interpolation, learned outputs and stochastic spread maps" width="960" height="536">
+        </a>
+        <figcaption><strong>Figure 1.</strong> All panels are bicubically resized to a common display size. Each RGB panel is independently stretched using its own combined RGB 2nd and 98th percentiles, so colour and contrast are not radiometrically comparable between panels. Each spread map is independently normalised to its own 99th percentile; its colours show within-case relative spread only and cannot be compared quantitatively across rows.</figcaption>
+      </figure>
+
+      <section id="protocol">
+        <h2>3. Diagnostic protocol</h2>
+        <h3>Observation consistency</h3>
+        <p>Without high-resolution truth, the first test asks whether a simple declared degradation of the generated product reconstructs the observation:</p>
+        <div class="equation" role="img" aria-label="Observation consistency loss is the mean absolute difference between box-averaged output and low-resolution input">
+          L<sub>obs,b</sub> = (1/HW) &Sigma;<sub>i=1</sub><sup>HW</sup> |P<sub>4</sub>(x&#770;)<sub>i,b</sub> &minus; y<sub>i,b</sub>|
+        </div>
+        <p><em>P<sub>4</sub></em> is 4&times;4 box averaging. It is not a Sentinel-2 MTF or PSF model, so this metric tests array-level consistency only. The results table reports <code>max_b L_obs,b</code> and identifies the corresponding band.</p>
+
+        <h3>Spectral angle</h3>
+        <p>For each low-grid pixel, the angle between observed and downsampled four-band vectors is:</p>
+        <div class="equation" role="img" aria-label="Spectral angle mapper equation">
+          SAM(y,x&#770;<sub>&darr;</sub>) = arccos[(y<sup>T</sup>x&#770;<sub>&darr;</sub>) / (||y||<sub>2</sub>||x&#770;<sub>&darr;</sub>||<sub>2</sub>)]
+        </div>
+        <p>SAM measures directional spectral change and is less sensitive to uniform magnitude scaling. It does not establish high-resolution spectral correctness.</p>
+
+        <h3>NDVI drift</h3>
+        <div class="equation" role="img" aria-label="Normalized Difference Vegetation Index and its error">
+          NDVI = (B08 &minus; B04) / (B08 + B04)<br>
+          &Delta;<sub>NDVI</sub> = NDVI(x&#770;<sub>&darr;</sub>) &minus; NDVI(y)
+        </div>
+
+        <h3>Learned detail relative to interpolation</h3>
+        <p>Residual detail is defined against bilinear interpolation <em>U</em>:</p>
+        <div class="equation" role="img" aria-label="Learned residual and gradient energy ratio">
+          r = x&#770; &minus; U(y), &nbsp; R<sub>&nabla;</sub> = E<sub>&nabla;</sub>(x&#770;) / E<sub>&nabla;</sub>(U(y))
+        </div>
+        <p>Here <em>E<sub>&nabla;</sub>(z)</em> is the sum of the mean squared horizontal and vertical first differences over all four bands. A ratio above one means the learned array has greater first-difference energy than bilinear interpolation; this can reflect edges, texture, contrast, noise or artefacts and does not establish greater accuracy.</p>
+      </section>
+
+      <section id="results">
+        <h2>4. Measured case results</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Diagnostic</th><th>Rural</th><th>Urban</th></tr></thead>
+            <tbody>
+              <tr><td>Mean spectral angle</td><td>0.827°</td><td>2.031°</td></tr>
+              <tr><td>p95 spectral angle</td><td>1.641°</td><td>5.416°</td></tr>
+              <tr><td>NDVI MAE after box averaging</td><td>0.0123</td><td>0.0280</td></tr>
+              <tr><td>p95 absolute NDVI error</td><td>0.0315</td><td>0.0848</td></tr>
+              <tr><td>Largest per-band consistency MAE</td><td>0.00307, B08</td><td>0.01300, B08</td></tr>
+              <tr><td>Learned / bilinear gradient energy</td><td>3.23&times;</td><td>7.05&times;</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="paper-figure">
+          <a href="consistency_diagnostics.svg" target="_blank" rel="noopener">
+            <img src="consistency_diagnostics.svg" alt="Spectral angle, scaled NDVI error and gradient-energy ratio for the rural and urban examples" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 2.</strong> The urban case exhibits larger spectral drift, NDVI drift and added gradient energy. The chart intentionally combines three dimensionless or explicitly scaled diagnostics; values should be read from their labels rather than compared as a shared physical unit.</figcaption>
+        </figure>
+
+        <h3>What can be concluded</h3>
+        <p>The learned outputs have substantially greater first-difference energy than bilinear interpolation, especially in the urban case. Their box-averaged spectra remain closer to the input in the rural example than in the urban example. B08 has the largest consistency error in both cases. These observations identify where independent high-resolution validation is most necessary.</p>
+
+        <h3>What cannot be concluded</h3>
+        <p>The added roads, roofs, field boundaries and textures cannot be labelled recovered or hallucinated from these two examples alone. No independent reference establishes their location, radiometry or effective spatial resolution. Higher gradient energy must therefore be interpreted as model-added structure, not recovered truth.</p>
+      </section>
+
+      <section id="spread">
+        <h2>5. Stochastic spread is not calibrated uncertainty</h2>
+        <p>Five 25-step outputs with &eta; = 0.0 and independently seeded initial latents were generated for each case. The displayed learned output instead uses 100 steps and &eta; = 0.95, so spread characterises a different sampler configuration, not uncertainty of the displayed product. At pixel <em>i</em>, spread is twice the Bessel-corrected sample standard deviation across the five outputs, averaged across four bands:</p>
+        <div class="equation" role="img" aria-label="Two-sigma stochastic spread equation">
+          u<sub>i</sub> = (2/4) &Sigma;<sub>b=1</sub><sup>4</sup> std<sub>k=1..5</sub>(x&#770;<sub>i,b</sub><sup>(k)</sup>)
+        </div>
+        <p>This measures sampler disagreement. It is not a confidence interval because coverage against truth has not been tested.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Spread diagnostic</th><th>Rural</th><th>Urban</th></tr></thead>
+            <tbody>
+              <tr><td>Mean 2&sigma; spread</td><td>0.0057</td><td>0.0196</td></tr>
+              <tr><td>p95 2&sigma; spread</td><td>0.0106</td><td>0.0467</td></tr>
+              <tr><td>Pixelwise Pearson r: spread vs four-band mean |learned &minus; bilinear|</td><td>0.375</td><td>0.421</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="paper-figure">
+          <a href="stochastic_spread.svg" target="_blank" rel="noopener">
+            <img src="stochastic_spread.svg" alt="Mean and p95 stochastic spread for the rural and urban examples" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 3.</strong> Urban stochastic spread is approximately 3.46 times the rural mean. Within each image, pixelwise Pearson correlations are 0.375 and 0.421. They describe spatial co-location between &eta;-zero sampler spread and deviation of the separate &eta;-0.95 output from interpolation; spatial autocorrelation and only two scenes preclude population inference.</figcaption>
+        </figure>
+
+        <h3>What calibration would require</h3>
+        <p>Given a valid high-resolution target and nominal interval <em>I<sub>i</sub>(q)</em>, empirical coverage would be:</p>
+        <div class="equation" role="img" aria-label="Empirical uncertainty coverage equation">
+          Coverage(q) = (1/N) &Sigma;<sub>i=1</sub><sup>N</sup> 1[x<sub>i</sub> &isin; I<sub>i</sub>(q)]
+        </div>
+        <p>Coverage must be reported with interval width and risk-coverage curves. Otherwise, broad intervals can appear reliable while remaining operationally useless.</p>
+      </section>
+
+      <section id="framework">
+        <h2>6. Framework for a full evaluation</h2>
+        <p>A publishable super-resolution claim requires a co-registered reference campaign and deterministic baselines under one spatial and radiometric contract.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Question</th><th>Required evidence</th></tr></thead>
+            <tbody>
+              <tr><td>Does the model improve reconstruction?</td><td>Nearest, bilinear and bicubic baselines against independent HR truth; PSNR, SSIM, SAM and ERGAS</td></tr>
+              <tr><td>Does it preserve physical observables?</td><td>Band bias, spectral angle, NDVI error and sensor-aware degradation consistency</td></tr>
+              <tr><td>Is added detail spatially correct?</td><td>Edge precision/recall, registration tolerance and frequency-spectrum comparison</td></tr>
+              <tr><td>Does it help another task?</td><td>Frozen downstream segmentation or detection model evaluated on LR, interpolation, learned SR and HR reference</td></tr>
+              <tr><td>Is uncertainty useful?</td><td>Coverage, interval width, class-conditional calibration and risk-coverage curves</td></tr>
+              <tr><td>Does it generalise?</td><td>Region, season, land-cover and sensor-held-out evaluation with repeated samples</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Sensor-aware degradation</h3>
+        <p>Box averaging is insufficient for a physical validation. A stronger operator should model the band-specific point-spread function, modulation transfer function, sampling lattice, spectral response and registration uncertainty:</p>
+        <div class="equation" role="img" aria-label="Band-specific sensor degradation operator">
+          D<sub>b</sub>(x) = S<sub>b</sub>[h<sub>b</sub> * x<sub>b</sub>] + n<sub>b</sub>
+        </div>
+        <p>Here <em>h<sub>b</sub></em> is a band-specific PSF and <em>S<sub>b</sub></em> is the sampling operator. Model selection against an incorrect degradation can reward outputs that satisfy software assumptions rather than sensor physics.</p>
+      </section>
+
+      <section id="limits">
+        <h2>7. Limitations</h2>
+        <ul>
+          <li>Only two bundled examples are evaluated; neither includes acquisition metadata or independent high-resolution truth.</li>
+          <li>Box averaging is not a Sentinel-2 MTF/PSF model.</li>
+          <li>Per-band histogram matching alters the generated radiometric distribution and affects consistency metrics.</li>
+          <li>The learned output uses 100 DDIM steps with &eta; = 0.95; spread uses five 25-step passes with &eta; = 0.0 and therefore characterises a different sampler configuration.</li>
+          <li>Five stochastic samples are insufficient for stable tail or coverage estimates.</li>
+          <li>The spread-residual correlation compares sampler disagreement with deviation from bilinear interpolation, not error against truth.</li>
+          <li>No downstream task, registration study, cloud stratification or geographic holdout is available.</li>
+        </ul>
+      </section>
+
+      <section id="reproducibility">
+        <h2>Reproducibility statement</h2>
+        <p>The reported run used source checkout <code>04490332ea0efda08fe1c2b1a4b9080705ca3ceb</code>, configuration SHA-256 <code>0f9409ffc1d4c1fcf874732fee3b12abd5c2bf82cd7b76c2e47ada3e4451c9e7</code> and checkpoint SHA-256 <code>e2621e3912eb7c14867c3d20c9029607ba941be8e166dc09621860fcac27dc3a</code>. The evaluation script verifies that the imported <code>s2sr</code> package resolves under the declared checkout. Raw metrics, evaluation code and figure-generation code are published with this note.</p>
+        <p>The bundled values are DN-like and were divided by 10,000. Acquisition metadata are absent, so the applicable Sentinel-2 processing baseline and any prior or required BOA additive-offset correction cannot be independently verified. The reported radiometric diagnostics are conditional on the zero-offset interpretation.</p>
+        <div class="article-actions">
+          <a class="btn btn-solid" href="evaluation.json">Raw evaluation JSON</a>
+          <a class="btn" href="evaluate_release.py">Evaluation script</a>
+          <a class="btn" href="generate_figures.py">Figure generator</a>
+          <a class="btn" href="../../">Back to portfolio</a>
+        </div>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>&copy; <span id="year">2026</span> Bilel Khlaifia</p>
+    <p class="foot-note">Research note 003 &middot; Sharpness is not evidence of truth</p>
+  </div>
+</footer>
+
+<script src="../../script.js" defer></script>
+</body>
+</html>

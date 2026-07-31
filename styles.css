@@ -448,6 +448,12 @@ a { color: inherit; }
   background: #fff;
 }
 
+.feature-image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .feature-tile > span {
   position: absolute;
   left: 4px;

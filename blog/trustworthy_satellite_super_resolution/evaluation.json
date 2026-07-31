@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-07-31T12:41:25.111739+00:00",
+  "scope": "Two bundled Sentinel-2 examples without independent HR truth; observation consistency, bilinear deviation and stochastic spread only",
+  "source": {
+    "commit": "04490332ea0efda08fe1c2b1a4b9080705ca3ceb",
+    "worktree_clean": true,
+    "imported_package_path": "/home/nextav/PyCharmMiscProject/s2sr/s2sr/s2sr/__init__.py",
+    "config_sha256": "0f9409ffc1d4c1fcf874732fee3b12abd5c2bf82cd7b76c2e47ada3e4451c9e7",
+    "checkpoint_sha256": "e2621e3912eb7c14867c3d20c9029607ba941be8e166dc09621860fcac27dc3a"
+  },
+  "runtime": {
+    "python": "3.11.15",
+    "pytorch": "2.6.0+cu124",
+    "cuda": "12.4",
+    "gpu": "NVIDIA GeForce RTX 4080",
+    "numpy": "2.4.4",
+    "scikit_image": "0.26.0",
+    "omegaconf": "2.3.1",
+    "pillow": "12.2.0"
+  },
+  "protocol": {
+    "bands": [
+      "B04",
+      "B03",
+      "B02",
+      "B08"
+    ],
+    "scale": 4,
+    "sampling_steps": 100,
+    "sampling_eta": 0.95,
+    "histogram_matching": true,
+    "uncertainty_samples": 5,
+    "uncertainty_steps": 25,
+    "uncertainty_eta": 0.0
+  },
+  "claims_not_supported": [
+    "PSNR, SSIM or ERGAS without independent HR truth",
+    "native 2.5 m resolving power",
+    "calibrated uncertainty coverage",
+    "population-level performance from two bundled examples"
+  ],
+  "cases": [
+    {
+      "name": "rural",
+      "source_sha256": "12c36e213f56c7b45181d8df47303fe63b54b3ee3a4a4672a57483e19344434a",
+      "lr_shape": [
+        1,
+        4,
+        128,
+        128
+      ],
+      "sr_shape": [
+        1,
+        4,
+        512,
+        512
+      ],
+      "downsample_consistency": {
+        "bias_by_band": [
+          -5.2457384299486876e-05,
+          -5.174343095859513e-05,
+          -5.185707414057106e-05,
+          -5.443402915261686e-05
+        ],
+        "mae_by_band": [
+          0.0017512496560811996,
+          0.0019740290008485317,
+          0.0016436943551525474,
+          0.003066565841436386
+        ],
+        "rmse_by_band": [
+          0.0022615334019064903,
+          0.0025495097506791353,
+          0.002147114370018244,
+          0.004012655466794968
+        ]
+      },
+      "spectral_angle_degrees": {
+        "mean": 0.8265680074691772,
+        "p95": 1.640541672706604
+      },
+      "ndvi_downsample_error": {
+        "bias": 0.00019149591389577836,
+        "mae": 0.012263447977602482,
+        "p95_absolute": 0.031482744961977005
+      },
+      "learned_vs_bilinear": {
+        "mae_by_band": [
+          0.0025538175832480192,
+          0.0031877197325229645,
+          0.0032363831996917725,
+          0.006095497868955135
+        ],
+        "gradient_energy_bilinear": 2.1309797375579365e-05,
+        "gradient_energy_learned": 6.881569424876943e-05,
+        "gradient_energy_ratio": 3.2292983849593497
+      },
+      "stochastic_spread": {
+        "samples": 5,
+        "sampling_steps": 25,
+        "mean_2sigma": 0.005662805866450071,
+        "p95_2sigma": 0.010578923858702183,
+        "correlation_with_absolute_residual": 0.374514639377594,
+        "calibrated": false
+      }
+    },
+    {
+      "name": "urban",
+      "source_sha256": "6948cfd11b3990460710ef59fdba754b30f64df48fc7ee29ce4cb4331ff34a86",
+      "lr_shape": [
+        1,
+        4,
+        128,
+        128
+      ],
+      "sr_shape": [
+        1,
+        4,
+        512,
+        512
+      ],
+      "downsample_consistency": {
+        "bias_by_band": [
+          -5.3299241699278355e-05,
+          -5.3822805057279766e-05,
+          -5.419814260676503e-05,
+          -3.4246746508870274e-05
+        ],
+        "mae_by_band": [
+          0.004470917861908674,
+          0.0047085825353860855,
+          0.005500775761902332,
+          0.012995834462344646
+        ],
+        "rmse_by_band": [
+          0.006235160864889622,
+          0.006566828582435846,
+          0.00747348926961422,
+          0.01835831068456173
+        ]
+      },
+      "spectral_angle_degrees": {
+        "mean": 2.0307512283325195,
+        "p95": 5.416186809539795
+      },
+      "ndvi_downsample_error": {
+        "bias": 0.003533201990649104,
+        "mae": 0.027991095557808876,
+        "p95_absolute": 0.08484524488449097
+      },
+      "learned_vs_bilinear": {
+        "mae_by_band": [
+          0.009913189336657524,
+          0.010490462183952332,
+          0.013159999623894691,
+          0.022377358749508858
+        ],
+        "gradient_energy_bilinear": 0.00012598281318787485,
+        "gradient_energy_learned": 0.0008878173539415002,
+        "gradient_energy_ratio": 7.047130727407408
+      },
+      "stochastic_spread": {
+        "samples": 5,
+        "sampling_steps": 25,
+        "mean_2sigma": 0.019567402079701424,
+        "p95_2sigma": 0.04665455222129822,
+        "correlation_with_absolute_residual": 0.42133957147598267,
+        "calibrated": false
+      }
+    }
+  ]
+}
