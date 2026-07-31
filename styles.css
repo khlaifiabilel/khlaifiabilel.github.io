@@ -555,7 +555,14 @@ a { color: inherit; }
   background: var(--bg);
 }
 
-.figure-cell img { border: 0; aspect-ratio: 1; object-fit: cover; }
+.figure-cell a { display: block; }
+.figure-cell img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 0;
+  object-fit: contain;
+}
 .figure-cell span {
   position: absolute;
   left: 10px;
