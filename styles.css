@@ -531,8 +531,8 @@ a { color: inherit; }
 .abstract p:last-child { margin-bottom: 0; }
 
 .paper-figure {
-  width: 100%;
-  margin: 38px 0;
+  width: min(100%, 620px);
+  margin: 38px auto;
 }
 
 .paper-figure > a { display: block; }
