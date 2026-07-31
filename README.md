@@ -14,6 +14,8 @@ so a `git push` is the whole deploy.
 index.html          all page content
 styles.css          monochrome design system, light + dark
 script.js           theme toggle, active nav, live star counts
+blog/               long-form technical research notes and their figures
+resume/             downloadable PDF resume
 assets/favicon.svg  monogram favicon
 assets/og.png       social preview (1200x630)
 assets/og-source.svg  square render source for og.png
@@ -38,6 +40,7 @@ python3 -m http.server 8000
 | Hero | `#top` |
 | What I work on | `#focus` |
 | Selected work | `#work` |
+| Technical blog | `#blog` |
 | Experience | `#experience` |
 | Research & teaching | `#research` |
 | Technical | `#skills` |

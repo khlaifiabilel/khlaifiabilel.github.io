@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel-first crop intelligence | Bilel Khlaifia</title>
+<meta name="description" content="A research note on joint 10 m crop mapping and constrained model-derived detail from Sentinel-1 and Sentinel-2 time series.">
+<meta name="author" content="Bilel Khlaifia">
+<link rel="canonical" href="https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/">
+<meta property="og:title" content="Sentinel-first crop intelligence">
+<meta property="og:description" content="Joint 10 m crop mapping and constrained model-derived detail from multimodal satellite time series.">
+<meta property="og:image" content="https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/sensor_and_label_panel.png">
+<meta property="article:published_time" content="2026-07-31">
+<meta property="article:author" content="Bilel Khlaifia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sentinel-first crop intelligence">
+<meta name="twitter:description" content="Joint 10 m crop mapping and constrained model-derived detail from multimodal satellite time series.">
+<meta name="twitter:image" content="https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/sensor_and_label_panel.png">
+
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Sentinel-first crop intelligence: joint 10 m mapping and constrained x10 detail",
+  "description": "A research note on joint crop mapping and constrained model-derived detail from Sentinel-1 and Sentinel-2 time series.",
+  "datePublished": "2026-07-31",
+  "dateModified": "2026-07-31",
+  "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
+  "image": "https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/sensor_and_label_panel.png",
+  "url": "https://khlaifiabilel.github.io/blog/super_resolution_crop_foundation/",
+  "keywords": ["Sentinel-1", "Sentinel-2", "crop mapping", "remote sensing", "multi-task learning", "super-resolution"]
+}
+</script>
+</head>
+<body class="article-shell">
+<a class="skip" href="#article">Skip to article</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark" aria-hidden="true">BK</span>
+      <span class="brand-name">Bilel Khlaifia</span>
+    </a>
+    <nav class="nav" aria-label="Article">
+      <a href="#problem">Problem</a>
+      <a href="#method">Method</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#references">References</a>
+    </nav>
+    <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <span class="toggle-dot" aria-hidden="true"></span>
+      <span class="toggle-text">Invert</span>
+    </button>
+  </div>
+</header>
+
+<main id="article">
+  <header class="article-head">
+    <div class="wrap">
+      <p class="article-kicker">Research note 001 &middot; Remote sensing</p>
+      <h1 class="article-title">Sentinel-first crop intelligence</h1>
+      <p class="article-deck">Joint 10 m crop mapping and constrained &times;10 detail from multimodal satellite time series.</p>
+      <div class="article-byline">
+        <span>Bilel Khlaifia</span>
+        <time datetime="2026-07-31">31 July 2026</time>
+        <span>Approximately 12 min read</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+    <aside class="article-toc" aria-label="Contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#problem">1. Problem</a></li>
+        <li><a href="#data">2. Data</a></li>
+        <li><a href="#method">3. Method</a></li>
+        <li><a href="#experiments">4. Experiments</a></li>
+        <li><a href="#results">5. Results</a></li>
+        <li><a href="#limitations">6. Limitations</a></li>
+        <li><a href="#reproducibility">7. Reproducibility</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </aside>
+
+    <article class="paper">
+      <section id="abstract" class="abstract">
+        <h2>Abstract</h2>
+        <p>Crop mapping from Earth-observation time series has two competing demands: temporally rich but spatially coarse inputs, and parcel-scale outputs whose apparent precision must not exceed their evidence. I describe a compact 1.95M-parameter architecture that encodes Sentinel-2 and dual-orbit Sentinel-1 sequences, fuses valid modalities spatially, and jointly predicts 10 m crop semantics, boundaries and tile-level crop presence. A constrained decoder also produces RGB, semantic and boundary layers on a 1 m storage grid. These layers are explicitly model-derived: only 10 m semantic labels are available, and the optical reference has approximately 1.5 m ground sampling distance. On one seed and one exposed PASTIS fold, the finalized internal benchmark reaches 0.4879 macro IoU and 0.8298 boundary F1 at a one-pixel tolerance. The experiment is neither a geographically held-out evaluation nor evidence of state-of-the-art performance.</p>
+      </section>
+
+      <section id="problem">
+        <h2>1. The resolution-evidence gap</h2>
+        <p>Agricultural parcels are temporal objects. Their spectral signatures evolve through sowing, growth and harvest, while clouds can obscure any single optical acquisition. Sentinel-2 provides the multispectral signal, and Sentinel-1 contributes cloud-independent radar observations. Both are informative, but the labels and core imagery in this experiment live on a 10 m grid.</p>
+        <p>The central design question is therefore not simply how to upsample. It is how to preserve a scientifically defensible relationship between direct observations and high-grid products. The system separates two claims:</p>
+        <ul>
+          <li><strong>Direct evidence:</strong> 19-class semantics, parcel boundaries and crop presence supervised on the 10 m PASTIS grid.</li>
+          <li><strong>Model-derived detail:</strong> RGB and logits represented on a 1 m storage grid, constrained to remain consistent with their 10 m anchors.</li>
+        </ul>
+        <div class="callout">
+          <strong>What “&times;10” means here</strong>
+          <p>It describes the array scale from 10 m pixels to a 1 m storage grid. It does not imply native 1 m Sentinel information, independently labeled 1 m crop classes or tenfold physical resolution.</p>
+        </div>
+      </section>
+
+      <figure class="paper-figure wide">
+        <img src="sensor_and_label_panel.png" alt="Aligned Sentinel-2 temporal RGB, Sentinel-1 pseudo-color, SPOT RGB and PASTIS semantic target views" width="2560" height="694">
+        <figcaption><strong>Figure 1.</strong> Four aligned views of one agricultural patch. Sentinel-2 and Sentinel-1 are deployment inputs; SPOT RGB and PASTIS semantics are training or evaluation targets. The SPOT image is an undated 2019 reference and is not paired to every Sentinel acquisition.</figcaption>
+      </figure>
+
+      <section id="data">
+        <h2>2. Data and supervision</h2>
+        <p>The experiment uses 2,433 complete records from AgriSR-PASTIS, built from PASTIS, PASTIS-R and PASTIS-HD assets. Records are partitioned by the standard five-fold metadata. Folds 1&ndash;3 train the model, fold 4 selects checkpoints, and fold 5 forms the internal benchmark.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source</th><th>Raw shape</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Sentinel-2</td><td><code>[T, 10, 128, 128]</code></td><td>Required temporal input; 16 dates sampled</td></tr>
+              <tr><td>Sentinel-1 ascending</td><td><code>[T, 3, 128, 128]</code></td><td>Optional radar input; VV/VH retained, 4 dates sampled</td></tr>
+              <tr><td>Sentinel-1 descending</td><td><code>[T, 3, 128, 128]</code></td><td>Optional radar input; VV/VH retained, 4 dates sampled</td></tr>
+              <tr><td>SPOT RGB</td><td><code>[3, 1280, 1280]</code></td><td>Training/evaluation target; never an inference input</td></tr>
+              <tr><td>PASTIS semantics</td><td><code>[128, 128]</code></td><td>19 predicted classes at 10 m; void ignored</td></tr>
+              <tr><td>Parcel instances</td><td><code>[128, 128]</code></td><td>Boundary derivation and optional feature pooling</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Validity masks reject malformed or absent observations, but they are not cloud masks. The dataset does not provide cloud probability, shadow, snow or saturation layers. This distinction matters when interpreting apparent optical robustness.</p>
+      </section>
+
+      <section id="method">
+        <h2>3. Architecture</h2>
+        <p>Each modality begins with a convolutional spectral stem. A two-layer, four-head Transformer then attends over acquisition dates independently at every spatial position. Day-of-year is represented with annual and semiannual sine/cosine features. The two Sentinel-1 orbits share encoder weights but receive distinct learned orbit embeddings.</p>
+        <p>A validity-aware softmax gate combines Sentinel-2, ascending Sentinel-1 and descending Sentinel-1 features. The fused representation enters a 10/20/40 m feature pyramid, followed by three direct heads:</p>
+        <ul>
+          <li>19-channel semantic logits at 10 m;</li>
+          <li>one-channel parcel-boundary logits at 10 m;</li>
+          <li>18 tile-level crop-presence logits.</li>
+        </ul>
+
+        <figure class="paper-figure wide">
+          <img src="super_resolution_crop_foundation_architecture.svg" alt="Architecture diagram for Sentinel temporal encoders, modality fusion, feature pyramid, task heads and constrained x10 decoder" width="1800" height="1120" loading="lazy">
+          <figcaption><strong>Figure 2.</strong> The deployment graph is above the dashed line. SPOT, semantic labels and parcel instances supervise training only and are never passed to <code>model.forward</code>.</figcaption>
+        </figure>
+
+        <h3>Block-consistent detail</h3>
+        <p>The high-grid decoder predicts a residual detail field rather than an unconstrained image. For each non-overlapping 10&times;10 output block, the residual is projected to zero mean:</p>
+        <div class="equation" role="img" aria-label="D zero equals D minus U of P of D; Y high equals U of Y ten metres plus D zero">
+          D<sub>0</sub> = D &minus; U(P(D))<br>
+          Y<sub>high</sub> = U(Y<sub>10m</sub>) + D<sub>0</sub>
+        </div>
+        <p>Here <code>P</code> averages each 10&times;10 block and <code>U</code> repeats it. Before overlap-weighted mosaicking, averaging a high-grid block recovers its 10 m anchor exactly. The constraint applies to semantic, boundary and RGB outputs. It prevents detail from silently changing the coarse prediction, but it does not prove that the inferred within-block structure is correct.</p>
+
+        <h3>Multi-task objective</h3>
+        <p>The training objective combines semantic cross-entropy and Dice, boundary BCE and Dice, crop-presence BCE, Sentinel-2 degradation consistency, standardized multiscale SPOT reconstruction, SPOT gradients, SPOT boundary guidance and semantic-boundary consistency. High-grid semantics have no independent high-resolution semantic target.</p>
+      </section>
+
+      <section id="experiments">
+        <h2>4. Experimental protocol</h2>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><th>Train / validation / benchmark</th><td>1,455 / 482 / 496 patches</td></tr>
+              <tr><th>Seed</th><td>42</td></tr>
+              <tr><th>Training crop</th><td>32&times;32 at 10 m; 320&times;320 high grid</td></tr>
+              <tr><th>Optimizer</th><td>AdamW, learning rate 3&times;10<sup>&minus;4</sup>, weight decay 0.01</td></tr>
+              <tr><th>Budget</th><td>50 epochs, batch size 1, FP16 automatic mixed precision</td></tr>
+              <tr><th>Selection</th><td>Best fold-4 macro IoU</td></tr>
+              <tr><th>Inference</th><td>32&times;32 tiles with 8-pixel overlap; logits blended before argmax</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The run uses one seed and one fold assignment. Fold 5 has been inspected multiple times and is consequently described as an <em>internal benchmark</em>, not an untouched test set. All four source Sentinel tiles occur in every split, so this protocol does not measure unseen-region generalization.</p>
+      </section>
+
+      <section id="results">
+        <h2>5. Results</h2>
+        <p>The selected checkpoint reached 0.5112 validation macro IoU at epoch 49. The final epoch fell to 0.4915, making the trajectory right-censored rather than demonstrably converged.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fold-5 internal metric</th><th>Measured value</th></tr></thead>
+            <tbody>
+              <tr><td>Overall pixel accuracy</td><td>0.7997</td></tr>
+              <tr><td>Macro IoU, including background</td><td>0.4879</td></tr>
+              <tr><td>Foreground macro IoU</td><td>0.4743</td></tr>
+              <tr><td>Macro F1</td><td>0.6142</td></tr>
+              <tr><td>Boundary F1, one 10 m-pixel tolerance</td><td>0.8298</td></tr>
+              <tr><td>Crop-presence macro / micro F1</td><td>0.2455 / 0.4607</td></tr>
+              <tr><td>Pixel top-label ECE</td><td>0.0733</td></tr>
+              <tr><td>SPOT diagnostic PSNR / SSIM</td><td>11.38 dB / 0.3097</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Class performance is uneven. Soft winter wheat, corn, winter rapeseed, beet and soybeans each exceed 0.75 IoU; sorghum reaches only 0.018, mixed cereal 0.105 and winter triticale 0.129. The low crop-presence macro F1 and rare-class IoUs are more informative than overall accuracy for operational risk.</p>
+        <p>The SPOT metrics are diagnostics, not same-date super-resolution scores. Sensor response, atmosphere, illumination, acquisition date and registration all differ. They must not be interpreted as proof of calibrated 1 m optical reconstruction.</p>
+      </section>
+
+      <section id="limitations">
+        <h2>6. Limitations and broader impact</h2>
+        <ul>
+          <li><strong>No repeated trials:</strong> one seed, one fold and no confidence intervals prevent variance-aware comparison.</li>
+          <li><strong>No geographic holdout:</strong> held-out patches share source tiles with training data.</li>
+          <li><strong>No causal ablation:</strong> the experiment does not isolate the value of Sentinel-1, SPOT guidance or individual losses.</li>
+          <li><strong>No high-resolution semantic truth:</strong> metre-grid semantic and boundary quality cannot be assigned a true metre-scale IoU.</li>
+          <li><strong>Retrospective by default:</strong> the full-season sequence may include observations later than a displayed acquisition date.</li>
+          <li><strong>Regional taxonomy:</strong> PASTIS represents metropolitan France and the French RPG taxonomy; global transfer is untested.</li>
+        </ul>
+        <p>Rare-crop errors can create unequal downstream outcomes. Predictions should not be treated as legal parcel boundaries or used without human and agronomic review for subsidy, insurance, credit or compliance decisions. Every high-grid export should retain provenance identifying it as model-derived.</p>
+      </section>
+
+      <section id="reproducibility">
+        <h2>7. Reproducibility statement</h2>
+        <p>The architecture, data contract, training configuration, evaluator definitions, per-class table and report hashes are versioned in the access-controlled project repository. The v2.1.0 software release recorded 64 passing tests and 81.42% line coverage.</p>
+        <div class="callout">
+          <strong>Known reproducibility gap</strong>
+          <p>The exact finalized checkpoint bytes and original experiment artifact are currently unavailable; only their recorded hashes and benchmark reports remain. The reported fold-5 values therefore cannot presently be rerun from the exact weights. This is a material limitation, not a documentation detail.</p>
+        </div>
+        <p>The model is a new compact temporal-Transformer/FPN implementation. Although the broader NeuralQ project retains attribution and conceptual lineage from MAESTRO, this version does not load the MAESTRO masked-autoencoder encoder and should not be described as a MAESTRO fine-tune.</p>
+        <div class="article-actions">
+          <a class="btn btn-solid" href="https://github.com/NeuralQ/neuralq-crop-foundation" target="_blank" rel="noopener">Access-controlled repository</a>
+          <a class="btn" href="../../">Back to portfolio</a>
+        </div>
+      </section>
+
+      <section id="references" class="references">
+        <h2>References</h2>
+        <ol>
+          <li>Labatie, A., Vaccaro, M., Lardiere, N., Garioud, A. and Gonthier, N. “MAESTRO: Masked AutoEncoders for Multimodal, Multitemporal, and Multispectral Earth Observation Data.” arXiv:2508.10894, 2025.</li>
+          <li>Sainte Fare Garnot, V. and Landrieu, L. “Panoptic Segmentation of Satellite Image Time Series with Convolutional Temporal Attention Networks.” ICCV, 2021.</li>
+          <li>Sainte Fare Garnot, V., Landrieu, L. and Chehata, N. “Multi-modal temporal attention models for crop mapping from satellite image time series.” ISPRS Journal of Photogrammetry and Remote Sensing, 2022.</li>
+          <li>Astruc, G., Gonthier, N., Mallet, C. and Landrieu, L. “OmniSat: Self-Supervised Modality Fusion for Earth Observation.” ECCV, 2024.</li>
+        </ol>
+        <p><strong>Data attribution.</strong> Contains modified Copernicus Sentinel data processed by THEIA/CNES, French RPG parcel annotations from IGN, and SPOT open data distributed by Dataterra Dinamis. Dataset assets retain their respective terms and Licence Ouverte/Open License 2.0 attribution requirements.</p>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>&copy; <span id="year">2026</span> Bilel Khlaifia</p>
+    <p class="foot-note">Research note 001 &middot; Claims scoped to available evidence</p>
+  </div>
+</footer>
+
+<script src="../../script.js" defer></script>
+</body>
+</html>
