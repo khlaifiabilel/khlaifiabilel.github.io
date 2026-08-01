@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 880" role="img" aria-label="Redtail dataflow: camera, stereo pair and joystick feed TensorRT DNN nodes on the Jetson; px4_controller converts DNN outputs into MAVROS setpoints for the PX4 or APM flight controller">
+  <title>Redtail onboard dataflow</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0a0a0a"/>
+    </marker>
+  </defs>
+
+  <style>
+    .grp   { fill: none; stroke: #9a9a9a; stroke-dasharray: 6 6; stroke-width: 1.5; }
+    .glab  { font: 600 20px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; letter-spacing: .12em; }
+    .box   { fill: #fafafa; stroke: #0a0a0a; stroke-width: 2; }
+    .t     { font: 600 22px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; text-anchor: middle; }
+    .s     { font: 17px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; text-anchor: middle; }
+    .wire  { fill: none; stroke: #0a0a0a; stroke-width: 2; marker-end: url(#arrow); }
+    .lbl   { font: 16px Consolas, Menlo, monospace; fill: #6b6b6b; text-anchor: middle; }
+    .num   { font: 700 15px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #ffffff; text-anchor: middle; }
+    .leg   { font: 19px Consolas, Menlo, monospace; fill: #6b6b6b; }
+    .note  { font: 18px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #9a9a9a; }
+  </style>
+
+  <!-- ===================== groups ===================== -->
+  <rect class="grp" x="40" y="60" width="380" height="640"/>
+  <text class="glab" x="60" y="98">SENSORS</text>
+
+  <rect class="grp" x="560" y="60" width="740" height="640"/>
+  <text class="glab" x="580" y="98">NVIDIA JETSON &#183; TENSORRT</text>
+
+  <rect class="grp" x="1400" y="60" width="360" height="640"/>
+  <text class="glab" x="1420" y="98">VEHICLE</text>
+
+  <!-- ===================== sensors ===================== -->
+  <rect class="box" x="80" y="140" width="300" height="100"/>
+  <text class="t" x="230" y="182">Forward camera</text>
+  <text class="s" x="230" y="212">gscam &#183; H.264 / H.265</text>
+
+  <rect class="box" x="80" y="330" width="300" height="100"/>
+  <text class="t" x="230" y="372">ZED stereo pair</text>
+  <text class="s" x="230" y="402">left + right frames</text>
+
+  <rect class="box" x="80" y="520" width="300" height="100"/>
+  <text class="t" x="230" y="562">Joystick</text>
+  <text class="s" x="230" y="592">NVIDIA Shield / Xbox</text>
+
+  <!-- ===================== jetson: DNN column ===================== -->
+  <rect class="box" x="620" y="110" width="300" height="100"/>
+  <text class="t" x="770" y="150">caffe_ros &#183; TrailNet</text>
+  <text class="s" x="770" y="180">S-ResNet-18 &#183; 6-way softmax</text>
+
+  <rect class="box" x="620" y="250" width="300" height="100"/>
+  <text class="t" x="770" y="290">caffe_ros &#183; YOLO</text>
+  <text class="s" x="770" y="320">person class &#8594; safety stop</text>
+
+  <rect class="box" x="620" y="390" width="300" height="100"/>
+  <text class="t" x="770" y="430">stereo_dnn_ros</text>
+  <text class="s" x="770" y="460">NVSmall / ResNet-18</text>
+
+  <rect class="box" x="620" y="530" width="300" height="80"/>
+  <text class="t" x="770" y="564">stereo_dnn_ros_viz</text>
+  <text class="s" x="770" y="592">disparity / depth render</text>
+
+  <!-- ===================== jetson: controller ===================== -->
+  <rect class="box" x="1000" y="140" width="260" height="330"/>
+  <text class="t" x="1130" y="280">px4_controller</text>
+  <text class="s" x="1130" y="310">fuses DNN + joystick</text>
+  <text class="s" x="1130" y="338">OFFBOARD waypoints</text>
+
+  <!-- ===================== vehicle ===================== -->
+  <rect class="box" x="1440" y="250" width="280" height="100"/>
+  <text class="t" x="1580" y="292">MAVROS</text>
+  <text class="s" x="1580" y="322">MAVLink bridge</text>
+
+  <rect class="box" x="1440" y="470" width="280" height="100"/>
+  <text class="t" x="1580" y="512">PX4 / APM</text>
+  <text class="s" x="1580" y="542">flight controller</text>
+
+  <!-- ===================== wires ===================== -->
+  <!-- camera -> TrailNet / YOLO -->
+  <path class="wire" d="M380,190 L500,190 L500,160 L620,160"/>
+  <path class="wire" d="M380,190 L500,190 L500,300 L620,300"/>
+  <!-- ZED -> stereo -->
+  <path class="wire" d="M380,380 L520,380 L520,440 L620,440"/>
+  <text class="lbl" x="450" y="366">left + right</text>
+  <!-- joystick -> controller, routed under the DNN column -->
+  <path class="wire" d="M380,570 L520,570 L520,650 L1130,650 L1130,470"/>
+  <!-- TrailNet -> controller -->
+  <path class="wire" d="M920,160 L960,160 L960,200 L1000,200"/>
+  <!-- YOLO -> controller -->
+  <path class="wire" d="M920,300 L1000,300"/>
+  <!-- stereo -> viz -->
+  <path class="wire" d="M770,490 L770,530"/>
+  <!-- controller -> MAVROS -->
+  <path class="wire" d="M1260,260 L1350,260 L1350,300 L1440,300"/>
+  <!-- MAVROS -> FCU -->
+  <path class="wire" d="M1580,350 L1580,470"/>
+
+  <!-- ===================== wire badges ===================== -->
+  <g>
+    <circle cx="500" cy="190" r="14" fill="#0a0a0a"/><text class="num" x="500" y="195">1</text>
+    <circle cx="960" cy="180" r="14" fill="#0a0a0a"/><text class="num" x="960" y="185">2</text>
+    <circle cx="960" cy="300" r="14" fill="#0a0a0a"/><text class="num" x="960" y="305">3</text>
+    <circle cx="820" cy="650" r="14" fill="#0a0a0a"/><text class="num" x="820" y="655">4</text>
+    <circle cx="1350" cy="280" r="14" fill="#0a0a0a"/><text class="num" x="1350" y="285">5</text>
+    <circle cx="1580" cy="410" r="14" fill="#0a0a0a"/><text class="num" x="1580" y="415">6</text>
+  </g>
+
+  <!-- ===================== legend ===================== -->
+  <g>
+    <circle cx="72" cy="754" r="14" fill="#0a0a0a"/><text class="num" x="72" y="759">1</text>
+    <text class="leg" x="98" y="761">sensor_msgs/Image</text>
+    <circle cx="392" cy="754" r="14" fill="#0a0a0a"/><text class="num" x="392" y="759">2</text>
+    <text class="leg" x="418" y="761">/trails_dnn/network/output</text>
+    <circle cx="812" cy="754" r="14" fill="#0a0a0a"/><text class="num" x="812" y="759">3</text>
+    <text class="leg" x="838" y="761">/object_dnn/network/output</text>
+    <circle cx="1232" cy="754" r="14" fill="#0a0a0a"/><text class="num" x="1232" y="759">4</text>
+    <text class="leg" x="1258" y="761">/joy</text>
+
+    <circle cx="72" cy="794" r="14" fill="#0a0a0a"/><text class="num" x="72" y="799">5</text>
+    <text class="leg" x="98" y="801">/mavros/setpoint_position/local (drone) &#183; /mavros/rc/override (rover)</text>
+    <circle cx="912" cy="794" r="14" fill="#0a0a0a"/><text class="num" x="912" y="799">6</text>
+    <text class="leg" x="938" y="801">MAVLink</text>
+  </g>
+
+  <text class="note" x="60" y="852">Historical stack: Ubuntu 16.04 &#183; ROS Kinetic &#183; CUDA 9 &#183; TensorRT 3/4 &#183; Jetson TX1/TX2&#160;&#160;&#160;&#8594;&#160;&#160;&#160;2026 blueprint: ROS 2 Humble &#183; CUDA 12.6 &#183; TensorRT 10 &#183; ONNX &#183; MAVROS 2 &#183; PX4 &#8805; 1.15</text>
+</svg>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inside Redtail: a preserved Jetson autonomy stack | Bilel Khlaifia</title>
+<meta name="description" content="An engineering audit of NVIDIA Redtail: how TrailNet, stereo depth networks and a PX4/MAVROS controller flew forest trails on a Jetson, and what preserving that stack honestly required.">
+<meta name="author" content="Bilel Khlaifia">
+<link rel="canonical" href="https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/">
+<meta property="og:title" content="Inside Redtail: a preserved Jetson autonomy stack">
+<meta property="og:description" content="TrailNet, stereo DNNs and PX4 control on an embedded GPU - a legacy NVIDIA autonomy stack, preserved and audited.">
+<meta property="og:image" content="https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/social-preview.png">
+<meta property="article:published_time" content="2026-08-01">
+<meta property="article:author" content="Bilel Khlaifia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Inside Redtail: a preserved Jetson autonomy stack">
+<meta name="twitter:description" content="TrailNet, stereo DNNs and PX4 control on an embedded GPU - a legacy NVIDIA autonomy stack, preserved and audited.">
+<meta name="twitter:image" content="https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/social-preview.png">
+
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": "Inside Redtail: how a Jetson flew forest trails, and what preserving that stack required",
+  "description": "An engineering audit of the NVIDIA Redtail visual-navigation stack: TrailNet orientation estimation, stereo depth networks, PX4/MAVROS control, preservation provenance and a 2026 modernization blueprint.",
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-08-01",
+  "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
+  "image": "https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/social-preview.png",
+  "url": "https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/",
+  "keywords": ["autonomous navigation", "UAV", "TrailNet", "TensorRT", "NVIDIA Jetson", "stereo depth", "PX4", "ROS", "software preservation"]
+}
+</script>
+</head>
+<body class="article-shell">
+<a class="skip" href="#article">Skip to article</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark" aria-hidden="true">BK</span>
+      <span class="brand-name">Bilel Khlaifia</span>
+    </a>
+    <nav class="nav" aria-label="Article">
+      <a href="#system">System</a>
+      <a href="#perception">Perception</a>
+      <a href="#control">Control</a>
+      <a href="#preservation">Preservation</a>
+      <a href="#references">References</a>
+    </nav>
+    <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <span class="toggle-dot" aria-hidden="true"></span>
+      <span class="toggle-text">Invert</span>
+    </button>
+  </div>
+</header>
+
+<main id="article">
+  <header class="article-head">
+    <div class="wrap">
+      <p class="article-kicker">Research note 004 &middot; Embedded autonomy</p>
+      <h1 class="article-title">Inside Redtail</h1>
+      <p class="article-deck">How a Jetson-borne stack flew forest trails with TrailNet, stereo depth and PX4 control &mdash; and what preserving it honestly required.</p>
+      <div class="article-byline">
+        <span>Bilel Khlaifia</span>
+        <time datetime="2026-08-01">1 August 2026</time>
+        <span>Approximately 12-minute read</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+    <aside class="article-toc" aria-label="Contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#system">1. System</a></li>
+        <li><a href="#perception">2. Perception</a></li>
+        <li><a href="#stereo">3. Stereo depth</a></li>
+        <li><a href="#control">4. Control</a></li>
+        <li><a href="#preservation">5. Preservation</a></li>
+        <li><a href="#modernization">6. Modernization</a></li>
+        <li><a href="#limitations">7. Limitations</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </aside>
+
+    <article class="paper">
+      <section id="abstract" class="abstract">
+        <h2>Abstract</h2>
+        <p>Redtail was NVIDIA&rsquo;s research stack for low-flying autonomous navigation: a TrailNet deep network estimates a vehicle&rsquo;s orientation and lateral offset relative to a forest trail from a single forward camera, stereo networks recover depth from a ZED pair, and a PX4/MAVROS controller converts those estimates into flight commands &mdash; all running onboard a Jetson with TensorRT acceleration. Upstream development stopped in 2020. This note documents the curated snapshot I maintain at <code>khlaifiabilel/autonomous-uav-visual-navigation</code>: what the system actually does node by node, what a &ldquo;faithful snapshot&rdquo; means in verifiable terms, and the 2026 modernization blueprint (ROS&nbsp;2 Humble, CUDA&nbsp;12.6, TensorRT&nbsp;10, ONNX, PX4&nbsp;&ge;&nbsp;1.15) that ships alongside it. No historical performance figures are re-measured here, and none should be inferred: the legacy stack is preserved and audited, not re-benchmarked.</p>
+      </section>
+
+      <section id="system">
+        <h2>1. What Redtail is, and why preserve it</h2>
+        <p>Between 2017 and 2020, Redtail demonstrated something that was far from obvious at the time: a complete perception-to-control loop for GPS-denied trail following, running entirely on an embedded GPU, with no offboard compute, lidar or prior map. The IROS&nbsp;2017 paper [1] reported autonomous flights over kilometre-scale forest trails. The engineering interest today is less the headline result than the shape of the system: a small, legible set of ROS nodes with narrow contracts, each replaceable in isolation.</p>
+        <p>The repository this note documents is a <strong>curated historical snapshot</strong> of the final upstream tree, not a fork that pretends the project is alive. Three claims define it, and each is checkable:</p>
+        <ul>
+          <li><strong>Source fidelity:</strong> compared with the final upstream <code>master</code>, the imported source code is unchanged. Repository-specific divergences are enumerated exhaustively: two presentation PDFs removed, four PNGs losslessly optimised, governance and metadata files added, documentation added, and two recorded metadata corrections.</li>
+          <li><strong>Verifiable assets:</strong> every pretrained artifact &mdash; TrailNet and split YOLO Caffe models, stereo checkpoints &mdash; carries a SHA-256 checksum in the model inventory.</li>
+          <li><strong>Explicit versioning:</strong> tag <code>v1.0.0</code> is the faithful legacy snapshot; <code>main</code> adds only a documentation and modernization layer on top of it.</li>
+        </ul>
+        <div class="callout">
+          <strong>Scope of claims</strong>
+          <p>NVIDIA states Redtail has not been developed since 2020. The historical stack targets Ubuntu 16.04, ROS Kinetic, CUDA 9, TensorRT 3/4 and Jetson TX1/TX2. Nothing in the snapshot re-validates flight behaviour, and the repository is not safety-certified or suitable for operational autonomous flight without independent engineering and validation.</p>
+        </div>
+      </section>
+
+      <figure class="paper-figure">
+        <div class="figure-grid">
+          <div class="figure-cell">
+            <a href="trailnet_rotate_left.jpg" target="_blank" rel="noopener" aria-label="Open the left-rotated trail view at full resolution">
+              <img src="trailnet_rotate_left.jpg" alt="Forest trail seen with the camera rotated towards the left trail edge" width="640" height="504" loading="lazy">
+            </a>
+            <span>View rotated left</span>
+          </div>
+          <div class="figure-cell">
+            <a href="trailnet_centered.jpg" target="_blank" rel="noopener" aria-label="Open the centered trail view at full resolution">
+              <img src="trailnet_centered.jpg" alt="Forest trail seen with the camera aligned with the trail direction" width="640" height="504" loading="lazy">
+            </a>
+            <span>View centered</span>
+          </div>
+          <div class="figure-cell">
+            <a href="trailnet_rotate_right.jpg" target="_blank" rel="noopener" aria-label="Open the right-rotated trail view at full resolution">
+              <img src="trailnet_rotate_right.jpg" alt="Forest trail seen with the camera rotated towards the right trail edge" width="640" height="504" loading="lazy">
+            </a>
+            <span>View rotated right</span>
+          </div>
+          <div class="figure-cell">
+            <a href="yolo_test_frame.png" target="_blank" rel="noopener" aria-label="Open the YOLO test frame at full resolution">
+              <img src="yolo_test_frame.png" alt="Street scene test frame used by the caffe_ros YOLO object detection tests" width="665" height="374" loading="lazy">
+            </a>
+            <span>YOLO test frame</span>
+          </div>
+        </div>
+        <figcaption><strong>Figure 1.</strong> Frames from the repository&rsquo;s own <code>caffe_ros</code> integration tests. The three trail views correspond to the orientation hypotheses TrailNet is trained to separate; the street scene exercises the YOLO detection path. Images: NVIDIA Redtail test data, BSD-3-Clause.</figcaption>
+      </figure>
+
+      <section id="perception">
+        <h2>2. Perception: a six-way softmax that steers</h2>
+        <p>TrailNet is deliberately austere. A Caffe S-ResNet-18 consumes a single monocular RGB frame and emits <strong>six softmax outputs in two groups of three</strong>: view orientation relative to the trail (facing left, centered, facing right) and lateral position across it (offset left, centered, offset right). Training data was collected with multi-camera rigs whose geometry supplies the labels; the design and its loss terms are documented in the paper [1] rather than re-derived here.</p>
+        <p>The insight worth retaining is the <em>output contract</em>. Instead of regressing a steering angle end-to-end, the network produces two interpretable class posteriors, and the downstream controller &mdash; not the network &mdash; owns the mapping from posterior to yaw and lateral correction. That separation is what makes the DNN swappable: any model that emits the same six-channel contract on <code>/trails_dnn/network/output</code> can steer the vehicle.</p>
+        <p><code>caffe_ros</code> wraps inference in a ROS node backed by TensorRT, with FP32, FP16 and INT8 execution paths, on-disk engine caching, and entropy calibration for INT8. The same node also serves a YOLO detector on <code>/object_dnn/network/output</code>; a detected person can trigger a safety stop in the controller. Both paths carry rostest/GoogleTest coverage in the snapshot &mdash; runnable only on the historical GPU/ROS stack.</p>
+
+        <figure class="paper-figure">
+          <a href="redtail_pipeline.svg" target="_blank" rel="noopener" aria-label="Open the Redtail dataflow diagram at full resolution">
+            <img src="redtail_pipeline.svg" alt="Redtail dataflow diagram: forward camera, ZED stereo pair and joystick feed TrailNet, YOLO and stereo DNN nodes on the Jetson; px4_controller fuses DNN and joystick input into MAVROS setpoints for the PX4 or APM flight controller" width="1800" height="880" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 2.</strong> Onboard dataflow as implemented by the ROS packages in the snapshot. Numbered wires are the actual topic contracts between nodes. <span class="figure-open">Select the diagram to inspect it at full resolution &nearr;</span></figcaption>
+        </figure>
+      </section>
+
+      <section id="stereo">
+        <h2>3. Stereo depth without a lidar budget</h2>
+        <p>The <code>stereoDNN</code> library is the second research artifact in the tree, matching the CVPR Workshops 2018 study on semi-supervised stereo depth [2]. It provides NVSmall and ResNet-18-based stereo networks as TensorFlow&nbsp;1.5 checkpoints, conversion tooling to TensorRT, and &mdash; the technically interesting part &mdash; <strong>custom CUDA/TensorRT plugins for the operations TensorRT 3/4 lacked</strong>: 3D convolution, cost-volume construction and soft-argmax. Each plugin carries GoogleTest coverage over its tensor operations.</p>
+        <p>In the ROS graph, <code>stereo_dnn_ros</code> consumes the ZED left/right pair and publishes disparity; <code>stereo_dnn_ros_viz</code> renders it for inspection. The historical role was environmental awareness alongside TrailNet&rsquo;s steering signal.</p>
+        <figure class="paper-figure">
+          <div class="figure-grid">
+            <div class="figure-cell">
+              <a href="stereo_left.png" target="_blank" rel="noopener" aria-label="Open the left stereo frame at full resolution">
+                <img src="stereo_left.png" alt="Left frame of the stereo sample pair shipped with the stereoDNN sample application" width="1242" height="375" loading="lazy">
+              </a>
+              <span>Left frame</span>
+            </div>
+            <div class="figure-cell">
+              <a href="stereo_right.png" target="_blank" rel="noopener" aria-label="Open the right stereo frame at full resolution">
+                <img src="stereo_right.png" alt="Right frame of the stereo sample pair shipped with the stereoDNN sample application" width="1242" height="375" loading="lazy">
+              </a>
+              <span>Right frame</span>
+            </div>
+          </div>
+          <figcaption><strong>Figure 3.</strong> The stereo pair shipped with the <code>stereoDNN</code> sample application. The networks estimate a dense disparity map from this input; serialized TensorRT plans in the tree are tied to their TensorRT version and GPU and must not be assumed portable.</figcaption>
+        </figure>
+      </section>
+
+      <section id="control">
+        <h2>4. Control: posteriors in, setpoints out</h2>
+        <p><code>px4_controller</code> closes the loop. It subscribes to the TrailNet posterior, the YOLO detections and the joystick, and publishes position setpoints on <code>/mavros/setpoint_position/local</code> for PX4 OFFBOARD flight &mdash; or RC-override and waypoint commands for an APM rover. The six TrailNet channels become a yaw correction (from the orientation group) and a lateral correction (from the offset group); the joystick remains the human arbiter throughout, and a person detection can stop the vehicle.</p>
+        <p>Two properties deserve note. First, the controller is <em>vehicle-agnostic in intent</em>: the same node drives a drone through MAVROS/PX4 and a ground rover through APM, switched by configuration. Second, the launch files encode their era &mdash; fixed serial devices, camera paths and private-network addresses are hard-coded and must be reviewed line by line before any reuse.</p>
+      </section>
+
+      <section id="preservation">
+        <h2>5. What &ldquo;faithful snapshot&rdquo; means in practice</h2>
+        <p>Preservation without provenance is just hosting. The snapshot treats provenance as a first-class deliverable:</p>
+        <ul>
+          <li><strong>Divergence ledger:</strong> the complete difference between this tree and the final upstream <code>master</code> is enumerated in the README and changelog &mdash; nothing else changed, and that claim is auditable by diff.</li>
+          <li><strong>Model inventory:</strong> every pretrained artifact has a size and SHA-256 entry; the split YOLO Caffe model reassembles with a documented one-line <code>cat</code>, and its checksum can be verified afterwards.</li>
+          <li><strong>Citable history:</strong> a Keep-a-Changelog history, <code>CITATION.cff</code> metadata binding the snapshot to the underlying papers, and immutable release tags replace the branch sprawl of the original project (former platform branches were consolidated into <code>main</code> after alignment with <code>v1.0.0</code>).</li>
+          <li><strong>Attribution:</strong> NVIDIA&rsquo;s BSD-3-Clause license, source headers and package metadata are preserved throughout.</li>
+        </ul>
+        <div class="callout">
+          <strong>What preservation does not claim</strong>
+          <p>Snapshot fidelity is a statement about bytes, not behaviour. The historical test suites require the legacy GPU/ROS stack; no continuous integration re-runs them, and no flight or bench result in the original papers is re-validated by this repository.</p>
+        </div>
+      </section>
+
+      <section id="modernization">
+        <h2>6. The 2026 modernization blueprint</h2>
+        <p>Alongside the frozen snapshot, the repository specifies a target stack for making the architecture &mdash; not necessarily the bytes &mdash; run on current hardware, with a phased migration plan and per-device Jetson strategy:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Component</th><th>Historical target</th><th>2026 blueprint</th></tr></thead>
+            <tbody>
+              <tr><td>Operating system</td><td>Ubuntu 16.04</td><td>Ubuntu 22.04 (containerised)</td></tr>
+              <tr><td>ROS</td><td>Kinetic (ROS 1)</td><td>ROS 2 Humble</td></tr>
+              <tr><td>CUDA / cuDNN</td><td>9.0 / 7.x</td><td>12.6 / current</td></tr>
+              <tr><td>Inference</td><td>TensorRT 3.0 and 4.0.1.6, Caffe parser</td><td>TensorRT 10, ONNX models</td></tr>
+              <tr><td>MAVLink bridge</td><td>MAVROS (ROS 1)</td><td>MAVROS 2</td></tr>
+              <tr><td>Flight stack</td><td>PX4 (2017-era) / APM</td><td>PX4 v1.15+</td></tr>
+              <tr><td>Hardware</td><td>Jetson TX1/TX2 (sm_53/sm_62)</td><td>Jetson Orin (JetPack 6); AGX Xavier at its JetPack 5 ceiling</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>A reproducible development environment ships in the tree: a Docker image built on CUDA 12.6, TensorRT 10 and ROS 2 Humble, with an L4T JetPack base argument for building directly on Jetson Orin. The blueprint is a specification and phase plan, not a completed port &mdash; the legacy Caffe models have not been re-validated under TensorRT 10 in this repository, and no modern flight results are claimed.</p>
+      </section>
+
+      <section id="limitations">
+        <h2>7. Limitations and safety boundaries</h2>
+        <ul>
+          <li><strong>Legacy research software:</strong> unmaintained upstream since 2020; obsolete package repositories, legacy NVIDIA Docker workflows and broad X11 permissions appear in historical scripts.</li>
+          <li><strong>No behavioural re-validation:</strong> nothing here re-measures TrailNet accuracy, stereo quality or flight performance; the papers remain the only performance evidence, on their original hardware.</li>
+          <li><strong>Machine-specific configuration:</strong> launch files contain fixed serial devices, camera devices, checkout paths and private-network addresses.</li>
+          <li><strong>Not flight-ready:</strong> no cybersecurity, functional-safety or aviation-compliance assessment exists; an independent manual override and applicable vehicle, airspace and radio regulations are mandatory for any experiment.</li>
+          <li><strong>Non-portable engines:</strong> serialized TensorRT plans are bound to their TensorRT version and GPU; only the checksummed source models are portable artifacts.</li>
+        </ul>
+        <p>The honest framing is that this repository is an <em>archival and engineering-audit contribution</em>: it makes a historically important autonomy stack legible, verifiable and citable, and it states exactly what would have to be rebuilt &mdash; and re-proven &mdash; to fly it again.</p>
+        <div class="article-actions">
+          <a class="btn btn-solid" href="https://github.com/khlaifiabilel/autonomous-uav-visual-navigation" target="_blank" rel="noopener">View the repository</a>
+          <a class="btn" href="../../">Back to portfolio</a>
+        </div>
+      </section>
+
+      <section id="references" class="references">
+        <h2>References</h2>
+        <ol>
+          <li>Smolyanskiy, N., Kamenev, A., Smith, J. and Birchfield, S. &ldquo;Toward Low-Flying Autonomous MAV Trail Navigation using Deep Neural Networks for Environmental Awareness.&rdquo; IROS, 2017. <a href="https://arxiv.org/abs/1705.02550" target="_blank" rel="noopener">arXiv:1705.02550</a>.</li>
+          <li>Smolyanskiy, N., Kamenev, A. and Birchfield, S. &ldquo;On the Importance of Stereo for Accurate Depth Estimation: An Efficient Semi-Supervised Deep Neural Network Approach.&rdquo; CVPR Workshops, 2018. <a href="https://arxiv.org/abs/1803.09719" target="_blank" rel="noopener">arXiv:1803.09719</a>.</li>
+          <li>NVIDIA-AI-IOT. &ldquo;Redtail,&rdquo; original repository and wiki. <a href="https://github.com/NVIDIA-AI-IOT/redtail" target="_blank" rel="noopener">GitHub</a>.</li>
+          <li>Khlaifia, B. &ldquo;Autonomous UAV Visual Navigation &mdash; NVIDIA Redtail Legacy Snapshot,&rdquo; release v1.0.0. <a href="https://github.com/khlaifiabilel/autonomous-uav-visual-navigation/releases/tag/v1.0.0" target="_blank" rel="noopener">Release record</a>.</li>
+        </ol>
+        <p><strong>Attribution.</strong> Redtail source, models and the test/sample imagery reproduced in Figures 1 and 3 originate from NVIDIA&rsquo;s Redtail project and are distributed under BSD-3-Clause with NVIDIA copyright notices preserved.</p>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>&copy; <span id="year">2026</span> Bilel Khlaifia</p>
+    <p class="foot-note">Research note 004 &middot; Legacy software documented as found</p>
+  </div>
+</footer>
+
+<script src="../../script.js" defer></script>
+</body>
+</html>
