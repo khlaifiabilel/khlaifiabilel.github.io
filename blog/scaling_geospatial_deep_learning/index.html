@@ -242,6 +242,10 @@
         <h3>Input pipeline</h3>
         <p>Remote-sensing training can combine NPY reads, GeoTIFF decoding, temporal sampling, validity masks and spatially coupled augmentation. Adding ranks multiplies demand on storage and CPU workers. If input production is slower than GPU consumption, DDP duplicates starvation rather than compute.</p>
         <p>Measure queue wait, decode time, augmentation time, pinned-memory transfer and GPU idle gaps separately. Tune persistent workers, prefetch depth, pinned memory, non-blocking copies and local caching only after the profiler identifies the dominant term.</p>
+        <div class="callout">
+          <strong>Pre-registered next measurement &middot; input pipeline</strong>
+          <p>This note&rsquo;s most decision-relevant number is deliberately absent: the microbenchmark excludes the input path, yet this section argues the input path is the likely binding constraint. The following single-GPU measurement is therefore pre-registered before any DDP experiment: per-step data-loader wait (time blocked in the loader iterator), decode and augmentation time per worker, pinned-memory host-to-device copy time, and GPU idle fraction between optimisation steps, captured over at least five epochs of the real dataset with the profiler and an instrumented loader. The published artefact will report the fraction of wall time attributable to input production versus GPU compute at batch sizes 1&ndash;4 in both precisions, in the same JSON-plus-script format as the existing evidence. If input production dominates, worker, prefetch and caching changes must be measured before any multi-GPU claim is attempted.</p>
+        </div>
 
         <h3>Validation and tiled inference</h3>
         <p>Tiled validation performs overlapping inference, logit blending, metric accumulation and high-grid diagnostics. Training throughput alone can therefore overstate end-to-end improvement. Validation must either be distributed with mathematically equivalent aggregation or timed as a separate fixed component.</p>

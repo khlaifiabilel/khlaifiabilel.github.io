@@ -14,6 +14,7 @@
 <meta property="og:description" content="TrailNet, stereo DNNs and PX4 control on an embedded GPU - a legacy NVIDIA autonomy stack, preserved and audited.">
 <meta property="og:image" content="https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/social-preview.png">
 <meta property="article:published_time" content="2026-08-01">
+<meta property="article:modified_time" content="2026-08-07">
 <meta property="article:author" content="Bilel Khlaifia">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Inside Redtail: a preserved Jetson autonomy stack">
@@ -30,7 +31,7 @@
   "headline": "Inside Redtail: how a Jetson flew forest trails, and what preserving that stack required",
   "description": "An engineering audit of the NVIDIA Redtail visual-navigation stack: TrailNet orientation estimation, stereo depth networks, PX4/MAVROS control, preservation provenance and a 2026 modernization blueprint.",
   "datePublished": "2026-08-01",
-  "dateModified": "2026-08-01",
+  "dateModified": "2026-08-07",
   "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
   "image": "https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/social-preview.png",
   "url": "https://khlaifiabilel.github.io/blog/autonomous_uav_visual_navigation/",
@@ -70,7 +71,8 @@
       <div class="article-byline">
         <span>Bilel Khlaifia</span>
         <time datetime="2026-08-01">1 August 2026</time>
-        <span>Approximately 12-minute read</span>
+        <time datetime="2026-08-07">Updated 7 August 2026</time>
+        <span>Approximately 13-minute read</span>
       </div>
     </div>
   </header>
@@ -86,7 +88,8 @@
         <li><a href="#control">4. Control</a></li>
         <li><a href="#preservation">5. Preservation</a></li>
         <li><a href="#modernization">6. Modernization</a></li>
-        <li><a href="#limitations">7. Limitations</a></li>
+        <li><a href="#aging">7. What aged well</a></li>
+        <li><a href="#limitations">8. Limitations</a></li>
         <li><a href="#references">References</a></li>
       </ol>
     </aside>
@@ -220,8 +223,28 @@
         <p>A reproducible development environment ships in the tree: a Docker image built on CUDA 12.6, TensorRT 10 and ROS 2 Humble, with an L4T JetPack base argument for building directly on Jetson Orin. The blueprint is a specification and phase plan, not a completed port &mdash; the legacy Caffe models have not been re-validated under TensorRT 10 in this repository, and no modern flight results are claimed.</p>
       </section>
 
+      <section id="aging">
+        <h2>7. What aged well, and what did not</h2>
+        <p>Preservation earns its keep when it supports judgment. The following is my engineering assessment of the design nine years on &mdash; argued from the preserved source and the direction the field took, not from new measurements.</p>
+        <h3>Aged well</h3>
+        <ul>
+          <li><strong>The narrow topic contract.</strong> TrailNet&rsquo;s six-channel posterior on a named topic, with the controller owning the posterior-to-command mapping, is a clean perception/policy separation. Any modern model that emits the same contract could steer the vehicle tomorrow; that is precisely the modularity today&rsquo;s autonomy stacks still aim for.</li>
+          <li><strong>Onboard-only inference.</strong> Betting on embedded GPU inference in 2017 anticipated the Jetson Orin era; the constraint that everything runs on the vehicle is now the default assumption for field robotics, not a curiosity.</li>
+          <li><strong>Runtime safety gating.</strong> The person-class safety stop is an early instance of a detector acting as an independent runtime monitor over a learned policy &mdash; a pattern that hardened into standard practice.</li>
+          <li><strong>Quantised inference discipline.</strong> FP16/INT8 paths with entropy calibration and engine caching, in 2017, prefigured what is now routine deployment practice.</li>
+        </ul>
+        <h3>Aged badly</h3>
+        <ul>
+          <li><strong>Framework mortality.</strong> The Caffe dependency and hand-written TensorRT 3/4 plugins embody the portability failure the ONNX ecosystem later solved; the bundled serialized engines &mdash; valid only for one TensorRT version and one GPU &mdash; are the cautionary exhibit.</li>
+          <li><strong>Discretised steering.</strong> Three orientation and three offset bins were a pragmatic 2017 answer to limited supervision, but coarse classification caps agility and composes poorly with uncertainty handling; subsequent trail and forest navigation moved to depth-informed local planners and continuous or end-to-end policies.</li>
+          <li><strong>No calibrated confidence.</strong> The softmax posterior carries no uncertainty statement, and the controller has no principled way to slow down when the network is unsure &mdash; by current standards, an unquantified-risk design.</li>
+          <li><strong>Middleware and stereo plumbing.</strong> ROS 1 Kinetic is end-of-life, and the custom 3D-convolution, cost-volume and soft-argmax plugins that justified <code>stereoDNN</code> are now native operations in mainstream runtimes.</li>
+        </ul>
+        <p>The pattern across both lists: the <em>interfaces</em> aged well, the <em>implementations</em> aged out. That is the strongest argument for preserving the tree faithfully while porting the architecture rather than the bytes.</p>
+      </section>
+
       <section id="limitations">
-        <h2>7. Limitations and safety boundaries</h2>
+        <h2>8. Limitations and safety boundaries</h2>
         <ul>
           <li><strong>Legacy research software:</strong> unmaintained upstream since 2020; obsolete package repositories, legacy NVIDIA Docker workflows and broad X11 permissions appear in historical scripts.</li>
           <li><strong>No behavioural re-validation:</strong> nothing here re-measures TrailNet accuracy, stereo quality or flight performance; the papers remain the only performance evidence, on their original hardware.</li>

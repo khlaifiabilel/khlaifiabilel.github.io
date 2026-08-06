@@ -88,7 +88,8 @@
         <li><a href="#backends">6. One core, three backends</a></li>
         <li><a href="#mapping">7. Workload mapping</a></li>
         <li><a href="#acceptance">8. Acceptance</a></li>
-        <li><a href="#limitations">9. Limitations</a></li>
+        <li><a href="#first-measurements">9. First measurements</a></li>
+        <li><a href="#limitations">10. Limitations</a></li>
         <li><a href="#references">References</a></li>
       </ol>
     </aside>
@@ -222,8 +223,19 @@
         </div>
       </section>
 
+      <section id="first-measurements">
+        <h2>9. First measurements, pre-registered</h2>
+        <p>A doctrine note about running infrastructure has an obligation this note has not yet met: at least one measurement of the thing itself. The following minimal campaign is pre-registered as the first published evidence, in this order, before any scaling claim:</p>
+        <ol>
+          <li><strong>Fabric baseline:</strong> <code>nqd bench all_reduce</code>, <code>all_gather</code> and <code>reduce_scatter</code> on the smallest available multi-GPU configuration, reporting algorithm and bus bandwidth with message-size sweeps. A socket-fallback signature (single-digit GB/s bus bandwidth on an RDMA-capable fabric) is a diagnosis to fix, not a result to publish.</li>
+          <li><strong>Topology validation in anger:</strong> <code>nqd mesh-plan</code> against every shipped configuration, published as a pass/fail table with the rejected-configuration error messages verbatim.</li>
+          <li><strong>Two-GPU DDP parity:</strong> the crop-foundation workload from research note 002 under the equal-global-batch protocol pre-registered there &mdash; loss parity against the single-device reference within the documented mixed-precision envelope, plus checkpoint-resume equivalence.</li>
+        </ol>
+        <p>Each item publishes its raw JSON and invocation alongside the numbers, in the evidence format used across these notes. Until then, this note remains what it claims to be: accounting, not measurement.</p>
+      </section>
+
       <section id="limitations">
-        <h2>9. Limitations</h2>
+        <h2>10. Limitations</h2>
         <ul>
           <li><strong>Alpha software:</strong> the framework is under active development; interfaces and invariants may change.</li>
           <li><strong>Analytical, not empirical:</strong> every figure and formula in this note is a derivation from stated assumptions and the cited literature; no cluster-scale throughput, bus-bandwidth or scaling measurement is published here.</li>
