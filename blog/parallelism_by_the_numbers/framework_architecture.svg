@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 700" role="img" aria-label="neuralq-distributed architecture: consumer model repositories program against one core of parallelism engines and a GPU data plane, deployed through one of three interchangeable Kubernetes orchestration backends onto a GPU cluster">
+  <title>neuralq-distributed: one core, three backends</title>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0a0a0a"/>
+    </marker>
+  </defs>
+  <style>
+    .grp  { fill: none; stroke: #9a9a9a; stroke-dasharray: 6 6; stroke-width: 1.5; }
+    .glab { font: 600 19px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; letter-spacing: .12em; }
+    .box  { fill: #fafafa; stroke: #0a0a0a; stroke-width: 2; }
+    .t    { font: 600 21px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; text-anchor: middle; }
+    .s    { font: 16px 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; text-anchor: middle; }
+    .m    { font: 15px Consolas, Menlo, monospace; fill: #6b6b6b; text-anchor: middle; }
+    .wire { fill: none; stroke: #0a0a0a; stroke-width: 2; marker-end: url(#arr); }
+  </style>
+
+  <!-- groups -->
+  <rect class="grp" x="30"   y="60" width="330" height="560"/>
+  <text class="glab" x="50" y="96">CONSUMER REPOS</text>
+
+  <rect class="grp" x="440"  y="60" width="560" height="560"/>
+  <text class="glab" x="460" y="96">CORE &#183; IDENTICAL ON ALL STACK BRANCHES</text>
+
+  <rect class="grp" x="1080" y="60" width="330" height="560"/>
+  <text class="glab" x="1100" y="96">BACKENDS &#183; ONE PER BRANCH</text>
+
+  <rect class="grp" x="1490" y="60" width="280" height="560"/>
+  <text class="glab" x="1510" y="96">K8S GPU CLUSTER</text>
+
+  <!-- consumers -->
+  <rect class="box" x="60" y="150" width="270" height="100"/>
+  <text class="t" x="195" y="192">neuralq-s1sr</text>
+  <text class="s" x="195" y="222">SR3 diffusion &#183; EDSR</text>
+
+  <rect class="box" x="60" y="330" width="270" height="100"/>
+  <text class="t" x="195" y="372">crop-foundation</text>
+  <text class="s" x="195" y="402">multimodal time series</text>
+
+  <!-- core -->
+  <rect class="box" x="470" y="120" width="240" height="90"/>
+  <text class="t" x="590" y="158">config</text>
+  <text class="m" x="590" y="186">schemas &#183; plan_topology</text>
+
+  <rect class="box" x="730" y="120" width="240" height="90"/>
+  <text class="t" x="850" y="158">train loop</text>
+  <text class="s" x="850" y="186">harness &#183; elastic resume</text>
+
+  <rect class="box" x="470" y="250" width="500" height="110"/>
+  <text class="t" x="720" y="292">parallel/</text>
+  <text class="m" x="720" y="322">ddp &#183; fsdp2 &#183; zero 1/2/3 &#183; tp &#183; pp &#183; mesh</text>
+
+  <rect class="box" x="470" y="400" width="500" height="110"/>
+  <text class="t" x="720" y="442">data/</text>
+  <text class="m" x="720" y="472">dask-cuda &#183; cudf &#183; dali &#183; gds &#183; sharding</text>
+
+  <rect class="box" x="470" y="545" width="240" height="60"/>
+  <text class="t" x="590" y="582">comm/</text>
+
+  <rect class="box" x="730" y="545" width="240" height="60"/>
+  <text class="t" x="850" y="582">checkpoint/</text>
+
+  <!-- backends -->
+  <rect class="box" x="1110" y="140" width="270" height="100"/>
+  <text class="t" x="1245" y="182">stack/kubeflow</text>
+  <text class="s" x="1245" y="212">PyTorchJob + Kueue</text>
+
+  <rect class="box" x="1110" y="300" width="270" height="100"/>
+  <text class="t" x="1245" y="342">stack/kuberay</text>
+  <text class="s" x="1245" y="372">RayCluster + Ray Train</text>
+
+  <rect class="box" x="1110" y="460" width="270" height="100"/>
+  <text class="t" x="1245" y="502">stack/torchrun-jobset</text>
+  <text class="s" x="1245" y="532">JobSet + c10d rendezvous</text>
+
+  <!-- cluster -->
+  <rect class="box" x="1520" y="140" width="220" height="100"/>
+  <text class="t" x="1630" y="182">GPU Operator</text>
+  <text class="s" x="1630" y="212">device plugin &#183; DCGM</text>
+
+  <rect class="box" x="1520" y="300" width="220" height="100"/>
+  <text class="t" x="1630" y="342">Pod network</text>
+  <text class="s" x="1630" y="372">RDMA: IB / RoCEv2</text>
+
+  <rect class="box" x="1520" y="460" width="220" height="100"/>
+  <text class="t" x="1630" y="502">Storage</text>
+  <text class="s" x="1630" y="532">NVMe &#183; RWX PVC &#183; object</text>
+
+  <!-- wires -->
+  <path class="wire" d="M330,200 L400,200 L400,305 L470,305"/>
+  <path class="wire" d="M330,380 L400,380 L400,330 L470,330"/>
+  <path class="wire" d="M1000,305 L1040,305 L1040,190 L1110,190"/>
+  <path class="wire" d="M1000,330 L1040,330 L1040,350 L1110,350"/>
+  <path class="wire" d="M1000,455 L1050,455 L1050,510 L1110,510"/>
+  <path class="wire" d="M1380,190 L1520,190"/>
+  <path class="wire" d="M1380,350 L1520,350"/>
+  <path class="wire" d="M1380,510 L1520,510"/>
+
+  <text class="m" x="900" y="680">consumers program against one core API; the backend that schedules the pods is interchangeable</text>
+</svg>

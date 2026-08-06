@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallelism by the numbers | Bilel Khlaifia</title>
+<meta name="description" content="The memory, communication and topology accounting behind neuralq-distributed: DDP, FSDP2, ZeRO, tensor and pipeline parallelism with a RAPIDS data plane on Kubernetes, validated before any pod is scheduled.">
+<meta name="author" content="Bilel Khlaifia">
+<link rel="canonical" href="https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/">
+<meta property="og:title" content="Parallelism by the numbers">
+<meta property="og:description" content="The memory, communication and topology accounting that decides how NeuralQ trains - enforced before a single pod is scheduled.">
+<meta property="og:image" content="https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/social-preview.png">
+<meta property="article:published_time" content="2026-08-07">
+<meta property="article:author" content="Bilel Khlaifia">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Parallelism by the numbers">
+<meta name="twitter:description" content="Memory, communication and topology accounting for distributed geospatial training.">
+<meta name="twitter:image" content="https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/social-preview.png">
+
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Parallelism by the numbers: the accounting doctrine behind neuralq-distributed",
+  "description": "The memory, communication and topology accounting behind a distributed training and GPU data-plane framework: DDP, FSDP2, ZeRO, tensor and pipeline parallelism with a RAPIDS data plane on Kubernetes.",
+  "datePublished": "2026-08-07",
+  "dateModified": "2026-08-07",
+  "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
+  "image": "https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/social-preview.png",
+  "url": "https://khlaifiabilel.github.io/blog/parallelism_by_the_numbers/",
+  "keywords": ["distributed training", "FSDP", "ZeRO", "tensor parallelism", "pipeline parallelism", "Kubernetes", "RAPIDS", "GPUDirect Storage", "PyTorch"]
+}
+</script>
+</head>
+<body class="article-shell">
+<a class="skip" href="#article">Skip to article</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="../../">
+      <span class="brand-mark" aria-hidden="true">BK</span>
+      <span class="brand-name">Bilel Khlaifia</span>
+    </a>
+    <nav class="nav" aria-label="Article">
+      <a href="#memory">Memory</a>
+      <a href="#communication">Communication</a>
+      <a href="#dataplane">Data plane</a>
+      <a href="#backends">Backends</a>
+      <a href="#acceptance">Acceptance</a>
+    </nav>
+    <button id="theme-toggle" class="toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">
+      <span class="toggle-dot" aria-hidden="true"></span>
+      <span class="toggle-text">Invert</span>
+    </button>
+  </div>
+</header>
+
+<main id="article">
+  <header class="article-head">
+    <div class="wrap">
+      <p class="article-kicker">Research note 005 &middot; ML systems</p>
+      <h1 class="article-title">Parallelism by the numbers</h1>
+      <p class="article-deck">The memory, communication and topology accounting that decides how NeuralQ trains its models &mdash; enforced before a single pod is scheduled.</p>
+      <div class="article-byline">
+        <span>Bilel Khlaifia</span>
+        <time datetime="2026-08-07">7 August 2026</time>
+        <span>Approximately 13-minute read</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+    <aside class="article-toc" aria-label="Contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#problem">1. Two workloads</a></li>
+        <li><a href="#memory">2. Memory</a></li>
+        <li><a href="#communication">3. Communication</a></li>
+        <li><a href="#topology">4. Topology contract</a></li>
+        <li><a href="#dataplane">5. Data plane</a></li>
+        <li><a href="#backends">6. One core, three backends</a></li>
+        <li><a href="#mapping">7. Workload mapping</a></li>
+        <li><a href="#acceptance">8. Acceptance</a></li>
+        <li><a href="#limitations">9. Limitations</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </aside>
+
+    <article class="paper">
+      <section id="abstract" class="abstract">
+        <h2>Abstract</h2>
+        <p>Research note 002 measured a single-GPU baseline for a geospatial workload and refused to fabricate multi-GPU numbers. This note documents the framework built to earn them: <code>neuralq-distributed</code>, NeuralQ&rsquo;s distributed-training and GPU data-plane layer. One Python core implements data, model and hybrid parallelism &mdash; DistributedDataParallel, FSDP2, ZeRO stages 1&ndash;3, tensor and pipeline parallelism composed on a <code>dp&times;tp&times;pp</code> device mesh &mdash; together with a RAPIDS data plane, deployable through three interchangeable Kubernetes backends. Every engine choice is justified by explicit memory and communication accounting rather than fashion, and every topology is schema-validated before a pod is scheduled. The framework is in alpha. All quantities in this note are analytical budgets derived from stated assumptions and the published literature; no empirical multi-GPU benchmark is reported here, and none should be quoted from this article.</p>
+      </section>
+
+      <section id="problem">
+        <h2>1. Two workloads, one budget</h2>
+        <p>The framework exists because two NeuralQ model lines stress opposite resources. The SAR super-resolution line trains SR3-class conditional diffusion models whose Adam-plus-EMA optimizer state outgrows a single GPU&rsquo;s memory as the UNet scales, while its raster preprocessing is CPU-bound at terabyte scale. The crop-intelligence line is the opposite: the model is compact (~1.95&nbsp;M parameters, research note 001), so the engine choice is nearly irrelevant &mdash; but its multimodal time-series input pipeline is I/O-bound, which is exactly the failure mode research note 002 warned about: adding ranks to a starved input pipeline duplicates starvation, not compute.</p>
+        <p>Four design tenets order every decision in the framework:</p>
+        <ul>
+          <li><strong>Correctness over convenience:</strong> a distributed run must be statistically equivalent to its single-device reference within a documented numerical envelope; collective semantics are never hidden.</li>
+          <li><strong>Config-driven:</strong> Pydantic-validated YAML; an invalid topology fails schema validation in seconds, not after a six-hour queue wait.</li>
+          <li><strong>Backend-agnostic core:</strong> one launcher contract resolves rank identity; the same training script runs under <code>torchrun</code>, Kubeflow, Ray Train or a raw JobSet.</li>
+          <li><strong>GPU-resident data path:</strong> decode, augment and stage batches on-device; the CPU touches bytes only where physics requires it.</li>
+        </ul>
+      </section>
+
+      <section id="memory">
+        <h2>2. Memory accounting</h2>
+        <p>For a model with &Phi; parameters trained in mixed precision with Adam, the replicated state is:</p>
+        <div class="equation" role="img" aria-label="Sixteen phi bytes per replica: two phi bf16 parameters, two phi bf16 gradients, twelve phi fp32 master weights and moments">
+          16&Phi; bytes = 2&Phi; (bf16 params) + 2&Phi; (bf16 grads) + 12&Phi; (fp32 master + moments)
+        </div>
+        <p>That single identity [4, 13] generates the engine taxonomy. Data parallelism replicates all 16&Phi; per rank; ZeRO partitions successively more of it across <em>N</em> ranks; fully sharded data parallel shards everything and re-gathers parameters transiently around each compute unit:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Engine</th><th>State per rank</th><th>Communication per step</th><th>Placement rule</th></tr></thead>
+            <tbody>
+              <tr><td>DDP</td><td>16&Phi;</td><td>all-reduce 2M(N&minus;1)/N, overlapped with backward</td><td>any fabric</td></tr>
+              <tr><td>ZeRO-1</td><td>4&Phi; + 12&Phi;/N</td><td>&asymp; DDP</td><td>any fabric</td></tr>
+              <tr><td>ZeRO-2</td><td>2&Phi; + 14&Phi;/N</td><td>&asymp; DDP, reduce-scatter form</td><td>any fabric</td></tr>
+              <tr><td>ZeRO-3 / FSDP2</td><td>16&Phi;/N (+ largest gathered unit)</td><td>&asymp; 1.5&times; DDP</td><td>any; HSDP confines gather/scatter to NVLink</td></tr>
+              <tr><td>Tensor parallel</td><td>~16&Phi;/t for sharded blocks</td><td>4 all-reduces of b&middot;s&middot;h per layer</td><td><strong>NVLink only</strong></td></tr>
+              <tr><td>Pipeline (1F1B)</td><td>~16&Phi;/p + in-flight activations</td><td>p2p boundary activations; bubble (p&minus;1)/(m+p&minus;1)</td><td>crosses nodes by design</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <figure class="paper-figure">
+          <a href="memory_per_rank.svg" target="_blank" rel="noopener">
+            <img src="memory_per_rank.svg" alt="Analytical Adam state per rank versus world size for DDP, ZeRO-1, ZeRO-2 and ZeRO-3/FSDP2 at one billion parameters" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 1.</strong> Adam state per rank for a &Phi; = 10&#8313; model (activations excluded). These curves are the closed-form expressions in the table, not measurements. The framework&rsquo;s config validator uses this accounting to reject infeasible placements before submission.</figcaption>
+        </figure>
+        <p>The chart explains the framework&rsquo;s default posture: DDP whenever 16&Phi; plus activations fits one GPU, because it is exactly-equivalent large-batch SGD at the lowest communication volume [3, 12]; sharding when optimizer state is the blocker, buying O(1/N) state memory for a bounded ~1.5&times; communication factor [4, 5]; activation checkpointing before model splitting [10].</p>
+      </section>
+
+      <section id="communication">
+        <h2>3. Communication accounting</h2>
+        <p>Ring all-reduce moves approximately 2M(N&minus;1)/N bytes per rank per step for gradient payload M, and is bandwidth-optimal for large messages [1, 2]. Its latency term grows linearly in N, which the framework models explicitly:</p>
+        <div class="equation" role="img" aria-label="All-reduce time approximately equals two times N minus one times alpha plus the bandwidth term">
+          T<sub>all-reduce</sub> &asymp; 2(N&minus;1)&alpha; + [2(N&minus;1)/N] M / B<sub>eff</sub>
+        </div>
+        <p>Two consequences shape engine placement. First, tensor parallelism issues four latency-critical all-reduces of activation payload b&middot;s&middot;h per transformer layer per step [6, 9] &mdash; so the framework hard-codes the invariant that the tensor-parallel degree stays inside one NVLink domain (<code>tp &le; gpus_per_node</code>). Second, pipeline parallelism pays only point-to-point boundary traffic plus an idle-bubble fraction (p&minus;1)/(m+p&minus;1) [7, 8]; the validator warns when the bubble exceeds 20% and recommends m &ge; 4p micro-batches. Hybrid placements compose with <code>tp</code> innermost on NVLink, <code>pp</code> across nodes, and <code>dp</code> outermost.</p>
+      </section>
+
+      <section id="topology">
+        <h2>4. Topology as a validated contract</h2>
+        <p>The topology is a named device mesh, <code>world = dp &times; tp &times; pp</code>, and its invariants are checked at configuration-validation time rather than discovered at rendezvous: <code>dp&middot;tp&middot;pp = world</code> is a hard error otherwise; <code>tp</code> must divide the GPUs per node; the pipeline bubble is estimated from the declared micro-batch count. A <code>mesh-plan</code> command runs the same validation offline, and CI executes it against every shipped configuration. The cost of a wrong topology is asymmetric &mdash; seconds of schema validation against hours of queued cluster time and a deadlocked rendezvous &mdash; so validation is the cheapest reliability instrument in the entire stack.</p>
+      </section>
+
+      <section id="dataplane">
+        <h2>5. The data plane is half the problem</h2>
+        <p>A training job is input-bound unless sustained ingest meets consumption:</p>
+        <div class="equation" role="img" aria-label="Ingest rate must be at least global batch times bytes per sample divided by step time">
+          R<sub>io</sub> &ge; R<sub>consume</sub> = B<sub>global</sub> &middot; bytes/sample / t<sub>step</sub>
+        </div>
+        <p>At corpus sizes far beyond host RAM the page cache is ineffective, and the classic storage&nbsp;&rarr;&nbsp;host-bounce-buffer&nbsp;&rarr;&nbsp;GPU path spends host memory bandwidth and CPU cycles on every byte. The framework&rsquo;s data plane therefore keeps the path GPU-resident: GPUDirect Storage readers (kvikio/cuFile) with transparent POSIX fallback, cuDF and Dask-CUDA for manifest and tabular ETL, DALI raster pipelines with rank-aware sharding, and zero-copy DLPack handover into PyTorch [17]. A deterministic shard-assignment module carries stated partition, balance and determinism properties, because &ldquo;every rank saw each sample exactly once per epoch&rdquo; is a correctness claim, not an aspiration.</p>
+      </section>
+
+      <section id="backends">
+        <h2>6. One core, three backends</h2>
+        <p>Framework code lives on a shared <code>core-base</code> line; each orchestration backend is a long-lived branch that differs only by its deployment layer. Consumer repositories program against the core API and remain agnostic to which backend schedules their pods.</p>
+        <figure class="paper-figure">
+          <a href="framework_architecture.svg" target="_blank" rel="noopener" aria-label="Open the framework architecture diagram at full resolution">
+            <img src="framework_architecture.svg" alt="Architecture diagram: consumer repositories feed one core of parallelism engines and a GPU data plane, deployed through Kubeflow, KubeRay or JobSet backends onto a Kubernetes GPU cluster" width="1800" height="700" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 2.</strong> One core, three interchangeable Kubernetes backends. <span class="figure-open">Select the diagram to inspect it at full resolution &nearr;</span></figcaption>
+        </figure>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Criterion</th><th>Kubeflow</th><th>KubeRay</th><th>torchrun + JobSet</th></tr></thead>
+            <tbody>
+              <tr><td>Operator footprint</td><td>Training Operator + Kueue</td><td>KubeRay + Ray runtime</td><td>JobSet controller only</td></tr>
+              <tr><td>Gang scheduling</td><td>Kueue, native</td><td>placement groups</td><td>Kueue, optional</td></tr>
+              <tr><td>ETL co-scheduling</td><td>separate Dask-CUDA</td><td><strong>unified</strong> (Ray Data)</td><td>separate Dask-CUDA</td></tr>
+              <tr><td>Multi-tenancy / quota</td><td><strong>best</strong> (ClusterQueues)</td><td>Ray-level, coarser</td><td>Kueue-level</td></tr>
+              <tr><td>Conceptual overhead</td><td>medium</td><td>highest</td><td><strong>lowest</strong></td></tr>
+              <tr><td>Best fit</td><td>shared production clusters</td><td>coupled ETL + train</td><td>lab or air-gapped clusters</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>All three assume the same substrate contract: whole GPUs exposed by the GPU Operator, all-or-nothing gang admission (N&minus;1 running pods deadlock at rendezvous while burning quota), one pod per node so tensor parallelism stays on NVLink, RDMA via secondary interfaces in production, and preemption handled by SIGTERM&nbsp;&rarr;&nbsp;async sharded checkpoint&nbsp;&rarr;&nbsp;resume. The production default is Kubeflow.</p>
+      </section>
+
+      <section id="mapping">
+        <h2>7. Workload mapping</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Workload</th><th>Engine</th><th>Quantitative rationale</th></tr></thead>
+            <tbody>
+              <tr><td>EDSR baseline (SAR SR)</td><td>DDP</td><td>16&Phi; far below HBM; static graph; the input pipeline is the binding constraint</td></tr>
+              <tr><td>SR3 diffusion (SAR SR)</td><td>DDP &rarr; FSDP2 at scale</td><td>EMA adds a second full parameter set; UNet activations dominate at large tiles; high per-sample loss variance across diffusion time implies a large critical batch, so data parallelism scales well [11, 14, 15]</td></tr>
+              <tr><td>SR3 roadmap, &ge;10&#8313; params</td><td>FSDP2/HSDP, + tp 2&ndash;4 if attention-bound</td><td>sharded state 16&Phi;/N; tensor parallelism only intra-node; pipeline beyond ~10&times; scale</td></tr>
+              <tr><td>Crop foundation model</td><td>DDP</td><td>~1.95&nbsp;M parameters make the engine choice irrelevant; investment goes to the cuDF/DALI input path</td></tr>
+              <tr><td>Dataset campaigns (TB)</td><td>Dask-CUDA + kvikio + cuDF</td><td>no training engine at all; CPU pool for download and geometry, GPU pool for calibration, tiling and statistics</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The mapping makes the framework&rsquo;s most counter-cultural point: for NeuralQ&rsquo;s current flagship crop model, the correct amount of model parallelism is <em>none</em>. The accounting says the money is in the data plane.</p>
+      </section>
+
+      <section id="acceptance">
+        <h2>8. Acceptance before claims</h2>
+        <p>The framework ships its own falsification tools, and the pre-registered measurement protocol from research note 002 is the bar its future benchmark reports must clear:</p>
+        <ul>
+          <li><strong>Fabric:</strong> a benchmark CLI reports algorithm and bus bandwidth for all-reduce, all-gather and reduce-scatter; single-digit GB/s bus bandwidth on an RDMA fabric is diagnosed as a socket fallback, not accepted as a result.</li>
+          <li><strong>Topology:</strong> mesh validation runs in CI on every shipped configuration.</li>
+          <li><strong>Throughput:</strong> samples/s and model-FLOPs utilisation under declared conventions.</li>
+          <li><strong>Correctness:</strong> distributed-versus-single-device loss parity within the mixed-precision reduction envelope, and checkpoint-resume equivalence.</li>
+          <li><strong>CI:</strong> lint, typing, CPU-safe unit tests for topology validation, sharding invariants and the launcher contract, plus manifest validation on every code branch.</li>
+        </ul>
+        <div class="callout">
+          <strong>Continuity with research note 002</strong>
+          <p>Note 002 ended with a protocol and a refusal: no multi-GPU numbers without measurements. This framework operationalises that refusal. When its benchmark harness produces empirical scaling results &mdash; 1, 2, 4 and 8 GPUs, warm and measured epochs, repeated seeds, equal-global-batch and equal-local-batch protocols, quality equivalence &mdash; those numbers will appear as measurements with their raw artefacts, not as extrapolated curves.</p>
+        </div>
+      </section>
+
+      <section id="limitations">
+        <h2>9. Limitations</h2>
+        <ul>
+          <li><strong>Alpha software:</strong> the framework is under active development; interfaces and invariants may change.</li>
+          <li><strong>Analytical, not empirical:</strong> every figure and formula in this note is a derivation from stated assumptions and the cited literature; no cluster-scale throughput, bus-bandwidth or scaling measurement is published here.</li>
+          <li><strong>Substrate assumptions:</strong> the accounting presumes whole-GPU allocation, gang scheduling and correctly provisioned RDMA; degraded substrates invalidate the placement rules.</li>
+          <li><strong>Workload scope:</strong> the doctrine is tuned to NeuralQ&rsquo;s geospatial model lines; the mapping table is not a general recommendation for other architectures.</li>
+          <li><strong>Access:</strong> the repository is proprietary and access-controlled; this note documents its design doctrine rather than its source.</li>
+        </ul>
+        <div class="article-actions">
+          <a class="btn btn-solid" href="https://github.com/NeuralQ/neuralq-distributed" target="_blank" rel="noopener">Access-controlled repository</a>
+          <a class="btn" href="../scaling_geospatial_deep_learning/">Research note 002</a>
+          <a class="btn" href="../../">Back to portfolio</a>
+        </div>
+      </section>
+
+      <section id="references" class="references">
+        <h2>References</h2>
+        <ol>
+          <li>Patarasuk, P. and Yuan, X. &ldquo;Bandwidth Optimal All-reduce Algorithms for Clusters of Workstations.&rdquo; Journal of Parallel and Distributed Computing 69(2), 2009.</li>
+          <li>Chan, E., Heimlich, M., Purkayastha, A. and van de Geijn, R. &ldquo;Collective Communication: Theory, Practice, and Experience.&rdquo; Concurrency and Computation 19(13), 2007.</li>
+          <li>Li, S. et al. &ldquo;PyTorch Distributed: Experiences on Accelerating Data Parallel Training.&rdquo; VLDB 13(12), 2020. <a href="https://arxiv.org/abs/2006.15704" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Rajbhandari, S., Rasley, J., Ruwase, O. and He, Y. &ldquo;ZeRO: Memory Optimizations Toward Training Trillion Parameter Models.&rdquo; SC20, 2020. <a href="https://arxiv.org/abs/1910.02054" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Zhao, Y. et al. &ldquo;PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel.&rdquo; VLDB 16(12), 2023. <a href="https://arxiv.org/abs/2304.11277" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Shoeybi, M. et al. &ldquo;Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism.&rdquo; arXiv:1909.08053, 2019. <a href="https://arxiv.org/abs/1909.08053" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Huang, Y. et al. &ldquo;GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism.&rdquo; NeurIPS 2019. <a href="https://arxiv.org/abs/1811.06965" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Narayanan, D. et al. &ldquo;PipeDream: Generalized Pipeline Parallelism for DNN Training.&rdquo; SOSP 2019.</li>
+          <li>Narayanan, D. et al. &ldquo;Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM.&rdquo; SC21, 2021. <a href="https://arxiv.org/abs/2104.04473" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Chen, T., Xu, B., Zhang, C. and Guestrin, C. &ldquo;Training Deep Nets with Sublinear Memory Cost.&rdquo; arXiv:1604.06174, 2016. <a href="https://arxiv.org/abs/1604.06174" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>McCandlish, S., Kaplan, J. and Amodei, D. &ldquo;An Empirical Model of Large-Batch Training.&rdquo; arXiv:1812.06162, 2018. <a href="https://arxiv.org/abs/1812.06162" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Goyal, P. et al. &ldquo;Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour.&rdquo; arXiv:1706.02677, 2017. <a href="https://arxiv.org/abs/1706.02677" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Micikevicius, P. et al. &ldquo;Mixed Precision Training.&rdquo; ICLR 2018. <a href="https://arxiv.org/abs/1710.03740" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Saharia, C. et al. &ldquo;Image Super-Resolution via Iterative Refinement.&rdquo; IEEE TPAMI, 2022. <a href="https://arxiv.org/abs/2104.07636" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Ho, J., Jain, A. and Abbeel, P. &ldquo;Denoising Diffusion Probabilistic Models.&rdquo; NeurIPS 2020. <a href="https://arxiv.org/abs/2006.11239" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>Lim, B. et al. &ldquo;Enhanced Deep Residual Networks for Single Image Super-Resolution.&rdquo; CVPR Workshops 2017. <a href="https://arxiv.org/abs/1707.02921" target="_blank" rel="noopener">arXiv</a>.</li>
+          <li>NVIDIA. NCCL documentation; GPUDirect Storage design guide; DALI documentation.</li>
+        </ol>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-inner">
+    <p>&copy; <span id="year">2026</span> Bilel Khlaifia</p>
+    <p class="foot-note">Research note 005 &middot; Numbers precede claims</p>
+  </div>
+</footer>
+
+<script src="../../script.js" defer></script>
+</body>
+</html>

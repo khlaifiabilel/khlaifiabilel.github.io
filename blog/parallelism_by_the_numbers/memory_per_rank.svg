@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Analytical Adam optimizer state per GPU rank versus world size for DDP, ZeRO stage 1, ZeRO stage 2 and ZeRO-3/FSDP2, for a one-billion-parameter model">
+  <title>Adam state per rank versus world size, one billion parameters</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <text class="ttl" x="70" y="26">Adam state per rank, &#934; = 10&#8313; parameters (GB) &mdash; analytical, not measured</text>
+
+  <!-- gridlines: 0,4,8,12,16 GB -->
+  <line class="grid" x1="70" y1="375" x2="730" y2="375"/>
+  <line class="grid" x1="70" y1="300" x2="730" y2="300"/>
+  <line class="grid" x1="70" y1="224" x2="730" y2="224"/>
+  <line class="grid" x1="70" y1="149" x2="730" y2="149"/>
+  <line class="grid" x1="70" y1="74"  x2="730" y2="74"/>
+  <text class="lbl" x="62" y="379" text-anchor="end">0</text>
+  <text class="lbl" x="62" y="304" text-anchor="end">4</text>
+  <text class="lbl" x="62" y="228" text-anchor="end">8</text>
+  <text class="lbl" x="62" y="153" text-anchor="end">12</text>
+  <text class="lbl" x="62" y="78"  text-anchor="end">16</text>
+
+  <!-- axes -->
+  <line class="ax" x1="70" y1="40" x2="70" y2="375"/>
+  <line class="ax" x1="70" y1="375" x2="730" y2="375"/>
+
+  <!-- x labels (log2-spaced world sizes) -->
+  <text class="lbl" x="90"  y="396" text-anchor="middle">1</text>
+  <text class="lbl" x="216" y="396" text-anchor="middle">2</text>
+  <text class="lbl" x="342" y="396" text-anchor="middle">4</text>
+  <text class="lbl" x="468" y="396" text-anchor="middle">8</text>
+  <text class="lbl" x="594" y="396" text-anchor="middle">16</text>
+  <text class="lbl" x="720" y="396" text-anchor="middle">32</text>
+  <text class="lbl" x="400" y="420" text-anchor="middle">world size N (data-parallel ranks)</text>
+
+  <!-- DDP: 16 GB flat -->
+  <polyline class="s" points="90,74 216,74 342,74 468,74 594,74 720,74"/>
+  <!-- ZeRO-1: 4 + 12/N -->
+  <polyline class="s" stroke-dasharray="9 5" points="90,74 216,187 342,243 468,272 594,286 720,293"/>
+  <!-- ZeRO-2: 2 + 14/N -->
+  <polyline class="s" stroke-dasharray="12 4 3 4" points="90,74 216,206 342,272 468,304 594,321 720,329"/>
+  <!-- ZeRO-3 / FSDP2: 16/N -->
+  <polyline class="s" stroke-dasharray="2.5 4.5" points="90,74 216,224 342,300 468,337 594,356 720,366"/>
+
+  <!-- markers -->
+  <g class="mk">
+    <circle cx="90" cy="74" r="3.2"/><circle cx="216" cy="74" r="3.2"/><circle cx="342" cy="74" r="3.2"/><circle cx="468" cy="74" r="3.2"/><circle cx="594" cy="74" r="3.2"/><circle cx="720" cy="74" r="3.2"/>
+    <circle cx="216" cy="187" r="3.2"/><circle cx="342" cy="243" r="3.2"/><circle cx="468" cy="272" r="3.2"/><circle cx="594" cy="286" r="3.2"/><circle cx="720" cy="293" r="3.2"/>
+    <circle cx="216" cy="206" r="3.2"/><circle cx="342" cy="272" r="3.2"/><circle cx="468" cy="304" r="3.2"/><circle cx="594" cy="321" r="3.2"/><circle cx="720" cy="329" r="3.2"/>
+    <circle cx="216" cy="224" r="3.2"/><circle cx="342" cy="300" r="3.2"/><circle cx="468" cy="337" r="3.2"/><circle cx="594" cy="356" r="3.2"/><circle cx="720" cy="366" r="3.2"/>
+  </g>
+
+  <!-- legend -->
+  <g>
+    <line class="s" x1="480" y1="106" x2="516" y2="106"/>
+    <text class="lbl" x="524" y="110">DDP: 16&#934;</text>
+    <line class="s" stroke-dasharray="9 5" x1="480" y1="128" x2="516" y2="128"/>
+    <text class="lbl" x="524" y="132">ZeRO-1: 4&#934; + 12&#934;/N</text>
+    <line class="s" stroke-dasharray="12 4 3 4" x1="480" y1="150" x2="516" y2="150"/>
+    <text class="lbl" x="524" y="154">ZeRO-2: 2&#934; + 14&#934;/N</text>
+    <line class="s" stroke-dasharray="2.5 4.5" x1="480" y1="172" x2="516" y2="172"/>
+    <text class="lbl" x="524" y="176">ZeRO-3 / FSDP2: 16&#934;/N</text>
+  </g>
+</svg>
