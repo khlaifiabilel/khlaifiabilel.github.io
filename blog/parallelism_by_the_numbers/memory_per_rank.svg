@@ -9,7 +9,7 @@
     .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
   </style>
   <rect width="760" height="430" fill="#ffffff"/>
-  <text class="ttl" x="70" y="26">Adam state per rank, &#934; = 10&#8313; parameters (GB) &mdash; analytical, not measured</text>
+  <text class="ttl" x="70" y="26">Adam state per rank, &#934; = 10&#8313; parameters (GB) &#8212; analytical, not measured</text>
 
   <!-- gridlines: 0,4,8,12,16 GB -->
   <line class="grid" x1="70" y1="375" x2="730" y2="375"/>
