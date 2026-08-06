@@ -14,6 +14,7 @@
 <meta property="og:description" content="From a measured single-GPU baseline to a falsifiable distributed PyTorch training plan.">
 <meta property="og:image" content="https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/social-preview.png">
 <meta property="article:published_time" content="2026-07-31">
+<meta property="article:modified_time" content="2026-08-07">
 <meta property="article:author" content="Bilel Khlaifia">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Scaling Geospatial Deep Learning">
@@ -30,7 +31,7 @@
   "headline": "Scaling Geospatial Deep Learning: From a Single GPU to Distributed PyTorch Training",
   "description": "A measurement-driven study of single-GPU geospatial training, mixed precision, memory scaling and distributed PyTorch DDP evidence.",
   "datePublished": "2026-07-31",
-  "dateModified": "2026-07-31",
+  "dateModified": "2026-08-07",
   "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
   "image": "https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/social-preview.png",
   "url": "https://khlaifiabilel.github.io/blog/scaling_geospatial_deep_learning/",
@@ -70,6 +71,7 @@
       <div class="article-byline">
         <span>Bilel Khlaifia</span>
         <time datetime="2026-07-31">31 July 2026</time>
+        <time datetime="2026-08-07">Updated 7 August 2026</time>
         <span>Approximately 16-minute read</span>
       </div>
     </div>
@@ -286,6 +288,10 @@
           <li>Compare equal-global-batch and equal-local-batch protocols explicitly.</li>
           <li>Test model-quality equivalence rather than assuming that throughput preserves optimisation.</li>
         </ol>
+        <div class="callout">
+          <strong>Update &middot; 7 August 2026</strong>
+          <p>The analytical scenarios and the pre-registered protocol above now have an implementation home: <code>neuralq-distributed</code>, NeuralQ&rsquo;s access-controlled distributed-training and GPU data-plane framework. It implements DDP, FSDP2, ZeRO stages 1&ndash;3, and tensor and pipeline parallelism composed on a validated <code>dp&times;tp&times;pp</code> device mesh, with a RAPIDS data plane (cuDF/Dask-CUDA, DALI, GPUDirect Storage) and three interchangeable Kubernetes backends (Kubeflow, KubeRay, JobSet). Its doctrine matches this note&rsquo;s discipline: topology is schema-validated before any pod is scheduled, a fabric benchmark CLI measures all-reduce bus bandwidth rather than assuming it, and acceptance requires distributed-versus-single-device loss parity within a documented numerical envelope. The framework&rsquo;s workload mapping assigns this note&rsquo;s ~1.95&nbsp;M-parameter crop model to plain DDP, with investment directed at the GPU-resident input pipeline &mdash; consistent with the bottleneck analysis in section 5. The multi-GPU numbers this note declined to fabricate remain unmeasured until that framework&rsquo;s benchmark harness produces them under this protocol.</p>
+        </div>
 
         <h3>Energy and cost</h3>
         <p>Runtime alone does not determine efficiency. If power samples <em>P(t)</em> and cloud prices are available:</p>

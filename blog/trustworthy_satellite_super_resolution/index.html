@@ -14,6 +14,7 @@
 <meta property="og:description" content="Observation consistency, spectral drift, learned detail and stochastic spread in Sentinel-2 super-resolution.">
 <meta property="og:image" content="https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/social-preview.png">
 <meta property="article:published_time" content="2026-07-31">
+<meta property="article:modified_time" content="2026-08-07">
 <meta property="article:author" content="Bilel Khlaifia">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Beyond PSNR: evaluating satellite super-resolution">
@@ -30,7 +31,7 @@
   "headline": "Beyond PSNR: evaluating satellite super-resolution without high-resolution truth",
   "description": "A scientific evaluation of observation consistency, spectral drift, learned detail and stochastic spread in Sentinel-2 super-resolution.",
   "datePublished": "2026-07-31",
-  "dateModified": "2026-07-31",
+  "dateModified": "2026-08-07",
   "author": {"@type": "Person", "name": "Bilel Khlaifia", "url": "https://khlaifiabilel.github.io/"},
   "image": "https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/social-preview.png",
   "url": "https://khlaifiabilel.github.io/blog/trustworthy_satellite_super_resolution/",
@@ -70,6 +71,7 @@
       <div class="article-byline">
         <span>Bilel Khlaifia</span>
         <time datetime="2026-07-31">31 July 2026</time>
+        <time datetime="2026-08-07">Updated 7 August 2026</time>
         <span>Approximately 14-minute read</span>
       </div>
     </div>
@@ -278,6 +280,10 @@
         <h2>Reproducibility statement</h2>
         <p>The reported run used source checkout <code>04490332ea0efda08fe1c2b1a4b9080705ca3ceb</code>, configuration SHA-256 <code>0f9409ffc1d4c1fcf874732fee3b12abd5c2bf82cd7b76c2e47ada3e4451c9e7</code> and checkpoint SHA-256 <code>e2621e3912eb7c14867c3d20c9029607ba941be8e166dc09621860fcac27dc3a</code>. The evaluation script verifies that the imported <code>s2sr</code> package resolves under the declared checkout. Raw metrics, evaluation code and figure-generation code are published with this note.</p>
         <p>The bundled values are DN-like and were divided by 10,000. Acquisition metadata are absent, so the applicable Sentinel-2 processing baseline and any prior or required BOA additive-offset correction cannot be independently verified. The reported radiometric diagnostics are conditional on the zero-offset interpretation.</p>
+        <div class="callout">
+          <strong>Release update &middot; 7 August 2026</strong>
+          <p>The artifact evaluated here belongs to the toolkit&rsquo;s initial four-band &times;4 release line (2.5&nbsp;m, July 2026), identified by the hashes above. On 3 August 2026 the toolkit shipped v1.1.0 on both release lines. The 2.5&nbsp;m line added a ten-band product, metadata-driven Sentinel-2 preprocessing, and fixes to DDIM schedule indexing and output geotransform scaling; the ~1.67&nbsp;m WorldStrat line added an all-bands cascade (a self-supervised Wald-protocol &times;2 sharpener for the 20&nbsp;m bands plus &times;6 detail injection with an MTF-matched PSF), an optional SEN2VENuS real-high-resolution red-edge supervision path, training quality gates and a low-resolution&ndash;consistency evaluation, with its &times;6 diffusion training campaign still in progress and trained checkpoints deferred to a later release. Because the schedule-indexing fix changes the sampler, every diagnostic in this note characterises the v1.0.0-era checkpoint and configuration only and must be re-measured before being quoted against v1.1.0 outputs. The same observation-consistency discipline is now being extended to cross-band SAR super-resolution (Sentinel-1 C-band toward Capella X-band) in a separate framework, where SAR-physics-aware diagnostics replace these optical ones.</p>
+        </div>
         <div class="article-actions">
           <a class="btn btn-solid" href="evaluation.json">Raw evaluation JSON</a>
           <a class="btn" href="evaluate_release.py">Evaluation script</a>
