@@ -1,38 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
-<title id="title">Observation-consistency diagnostics</title>
-<desc id="desc">Two bundled examples only; no independent high-resolution truth</desc>
-<style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub{font-size:11px;fill:#666}.tick{font-size:10px;fill:#666}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}</style>
-<rect width="760" height="430" fill="#ffffff"/>
-<text x="42" y="35" class="title">Observation-consistency diagnostics</text>
-<text x="42" y="55" class="sub">Two bundled examples only; no independent high-resolution truth</text>
-<line x1="72" y1="350.0" x2="712" y2="350.0" class="grid"/>
-<text x="62" y="354.0" text-anchor="end" class="tick">0</text>
-<line x1="72" y1="285.0" x2="712" y2="285.0" class="grid"/>
-<text x="62" y="289.0" text-anchor="end" class="tick">2</text>
-<line x1="72" y1="220.0" x2="712" y2="220.0" class="grid"/>
-<text x="62" y="224.0" text-anchor="end" class="tick">4</text>
-<line x1="72" y1="155.0" x2="712" y2="155.0" class="grid"/>
-<text x="62" y="159.0" text-anchor="end" class="tick">6</text>
-<line x1="72" y1="90.0" x2="712" y2="90.0" class="grid"/>
-<text x="62" y="94.0" text-anchor="end" class="tick">8</text>
-<rect x="166.8" y="323.1" width="40" height="26.9" fill="#2563eb"/>
-<text x="186.8" y="316.1" text-anchor="middle" class="value">0.83</text>
-<rect x="224.8" y="310.1" width="40" height="39.9" fill="#15803d"/>
-<text x="244.8" y="303.1" text-anchor="middle" class="value">1.23</text>
-<rect x="282.8" y="245.0" width="40" height="105.0" fill="#d97706"/>
-<text x="302.8" y="238.0" text-anchor="middle" class="value">3.23</text>
-<text x="244.8" y="374" text-anchor="middle" class="label">Rural</text>
-<rect x="461.2" y="284.0" width="40" height="66.0" fill="#2563eb"/>
-<text x="481.2" y="277.0" text-anchor="middle" class="value">2.03</text>
-<rect x="519.2" y="259.0" width="40" height="91.0" fill="#15803d"/>
-<text x="539.2" y="252.0" text-anchor="middle" class="value">2.80</text>
-<rect x="577.2" y="121.0" width="40" height="229.0" fill="#d97706"/>
-<text x="597.2" y="114.0" text-anchor="middle" class="value">7.05</text>
-<text x="539.2" y="374" text-anchor="middle" class="label">Urban</text>
-<rect x="255" y="397" width="11" height="11" fill="#2563eb"/>
-<text x="272" y="406" class="tick">SAM mean (deg)</text>
-<rect x="420" y="397" width="11" height="11" fill="#15803d"/>
-<text x="437" y="406" class="tick">NDVI MAE (×100)</text>
-<rect x="585" y="397" width="11" height="11" fill="#d97706"/>
-<text x="602" y="406" class="tick">Gradient ratio</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 386" role="img" aria-label="Paired bar chart of six measured observation-consistency diagnostics for the rural and urban examples, each row normalised to its own maximum with true values labelled">
+  <title>Observation-consistency diagnostics - measured, two examples</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="386" fill="#ffffff"/>
+  <text class="ttl" x="20" y="28">Observation-consistency diagnostics - measured, two examples</text>
+  <rect class="bar" x="466" y="16" width="16" height="12"/>
+  <text class="lbl" x="488" y="27">Rural</text>
+  <rect class="bar2" x="566" y="16" width="16" height="12"/>
+  <text class="lbl" x="588" y="27">Urban</text>
+  <line class="ax" x1="236" y1="48" x2="236" y2="336"/>
+  <text class="lbl" x="228" y="74" text-anchor="end">Mean spectral angle</text>
+  <rect class="bar" x="236" y="58" width="179.1" height="14"/>
+  <text class="val" x="422.1" y="69">0.827&#176;</text>
+  <rect class="bar2" x="236" y="75" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="86">2.031&#176;</text>
+  <text class="lbl" x="228" y="122" text-anchor="end">p95 spectral angle</text>
+  <rect class="bar" x="236" y="106" width="133.3" height="14"/>
+  <text class="val" x="376.3" y="117">1.641&#176;</text>
+  <rect class="bar2" x="236" y="123" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="134">5.416&#176;</text>
+  <text class="lbl" x="228" y="170" text-anchor="end">NDVI MAE (box-averaged)</text>
+  <rect class="bar" x="236" y="154" width="192.8" height="14"/>
+  <text class="val" x="435.8" y="165">0.0123</text>
+  <rect class="bar2" x="236" y="171" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="182">0.0280</text>
+  <text class="lbl" x="228" y="218" text-anchor="end">p95 absolute NDVI error</text>
+  <rect class="bar" x="236" y="202" width="163.3" height="14"/>
+  <text class="val" x="406.3" y="213">0.0315</text>
+  <rect class="bar2" x="236" y="219" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="230">0.0848</text>
+  <text class="lbl" x="228" y="266" text-anchor="end">Largest band MAE (B08)</text>
+  <rect class="bar" x="236" y="250" width="103.8" height="14"/>
+  <text class="val" x="346.8" y="261">0.00307</text>
+  <rect class="bar2" x="236" y="267" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="278">0.01300</text>
+  <text class="lbl" x="228" y="314" text-anchor="end">Learned/bilinear gradient energy</text>
+  <rect class="bar" x="236" y="298" width="201.6" height="14"/>
+  <text class="val" x="444.6" y="309">3.23&#215;</text>
+  <rect class="bar2" x="236" y="315" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="326">7.05&#215;</text>
+  <text class="lbl" x="20" y="376">Bars are normalised per row to the row maximum; read values from the labels. Units differ per row.</text>
 </svg>

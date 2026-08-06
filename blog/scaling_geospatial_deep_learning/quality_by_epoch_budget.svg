@@ -1,1 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" aria-labelledby="title desc" role="img" viewBox="0 0 760 430"><title id="title">Checkpoint quality versus training budget</title><desc id="desc">Measured historical run; best validation macro IoU available by each epoch</desc><style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub,.tick{font-size:11px;fill:#666}.tick{font-size:10px}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}.line{fill:none;stroke-width:2.5}</style><rect width="760" height="430" fill="#fff"/><text x="42" y="35" class="title">Checkpoint quality versus training budget</text><text x="42" y="55" class="sub">Measured historical run; best validation macro IoU available by each epoch</text><line x1="72" x2="712" y1="355" y2="355" class="grid"/><text x="62" y="359" class="tick" text-anchor="end">0.1</text><line x1="72" x2="712" y1="296.1" y2="296.1" class="grid"/><text x="62" y="300.1" class="tick" text-anchor="end">0.2</text><line x1="72" x2="712" y1="237.2" y2="237.2" class="grid"/><text x="62" y="241.2" class="tick" text-anchor="end">0.3</text><line x1="72" x2="712" y1="178.3" y2="178.3" class="grid"/><text x="62" y="182.3" class="tick" text-anchor="end">0.4</text><line x1="72" x2="712" y1="119.4" y2="119.4" class="grid"/><text x="62" y="123.4" class="tick" text-anchor="end">0.5</text><path stroke="#15803d" d="M 72.0 343.7 L 85.1 307.7 L 98.1 300.0 L 111.2 274.3 L 124.2 263.0 L 137.3 251.4 L 150.4 247.6 L 163.4 231.8 L 176.5 228.5 L 189.6 219.4 L 202.6 212.6 L 215.7 203.3 L 228.7 203.3 L 241.8 198.5 L 254.9 192.4 L 267.9 192.4 L 281.0 187.8 L 294.0 187.0 L 307.1 178.3 L 320.2 178.3 L 333.2 178.3 L 346.3 170.8 L 359.3 164.5 L 372.4 164.5 L 385.5 161.3 L 398.5 159.9 L 411.6 156.0 L 424.7 156.0 L 437.7 150.9 L 450.8 150.9 L 463.8 150.9 L 476.9 137.4 L 490.0 137.4 L 503.0 134.8 L 516.1 134.8 L 529.1 134.8 L 542.2 134.8 L 555.3 134.8 L 568.3 134.8 L 581.4 134.8 L 594.4 129.3 L 607.5 125.1 L 620.6 125.1 L 633.6 125.1 L 646.7 125.1 L 659.8 125.1 L 672.8 125.1 L 685.9 122.3 L 698.9 112.8 L 712.0 112.8" class="line"/><text x="72" y="377" class="tick" text-anchor="middle">1</text><text x="189.6" y="377" class="tick" text-anchor="middle">10</text><text x="320.2" y="377" class="tick" text-anchor="middle">20</text><text x="450.8" y="377" class="tick" text-anchor="middle">30</text><text x="581.4" y="377" class="tick" text-anchor="middle">40</text><text x="712" y="377" class="tick" text-anchor="middle">50</text><circle cx="698.9" cy="112.8" r="5" fill="#15803d"/><text x="690.9" y="100.8" class="value" text-anchor="end">Best 0.5112 at epoch 49</text><text x="392" y="407" class="label" text-anchor="middle">Epoch budget</text><text x="18" y="230" class="label" transform="rotate(-90 18 230)">Best available macro IoU</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Line chart of the best validation macro IoU available at each epoch of the measured 50-epoch run">
+  <title>Best validation macro IoU available at each epoch - measured, one run</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <text class="ttl" x="20" y="26">Best validation macro IoU available at each epoch - measured, one run</text>
+  <line class="grid" x1="70" y1="374" x2="730" y2="374"/>
+  <text class="lbl" x="62" y="378" text-anchor="end">0</text>
+  <line class="grid" x1="70" y1="314" x2="730" y2="314"/>
+  <text class="lbl" x="62" y="318" text-anchor="end">0.1</text>
+  <line class="grid" x1="70" y1="255" x2="730" y2="255"/>
+  <text class="lbl" x="62" y="259" text-anchor="end">0.2</text>
+  <line class="grid" x1="70" y1="195" x2="730" y2="195"/>
+  <text class="lbl" x="62" y="199" text-anchor="end">0.3</text>
+  <line class="grid" x1="70" y1="135" x2="730" y2="135"/>
+  <text class="lbl" x="62" y="139" text-anchor="end">0.4</text>
+  <line class="grid" x1="70" y1="76" x2="730" y2="76"/>
+  <text class="lbl" x="62" y="80" text-anchor="end">0.5</text>
+  <line class="ax" x1="70" y1="40" x2="70" y2="374"/>
+  <line class="ax" x1="70" y1="374" x2="730" y2="374"/>
+  <text class="lbl" x="70" y="394" text-anchor="middle">0</text>
+  <text class="lbl" x="202" y="394" text-anchor="middle">10</text>
+  <text class="lbl" x="334" y="394" text-anchor="middle">20</text>
+  <text class="lbl" x="466" y="394" text-anchor="middle">30</text>
+  <text class="lbl" x="598" y="394" text-anchor="middle">40</text>
+  <text class="lbl" x="730" y="394" text-anchor="middle">50</text>
+  <text class="lbl" x="400" y="418" text-anchor="middle">epoch</text>
+  <polyline class="s" points="83.2,303.0 96.4,266.4 109.6,258.6 122.8,232.7 136.0,221.2 149.2,209.5 162.4,205.6 175.6,189.6 188.8,186.3 202.0,177.0 215.2,170.1 228.4,160.8 241.6,160.8 254.8,155.9 268.0,149.7 281.2,149.7 294.4,145.0 307.6,144.2 320.8,135.5 334.0,135.5 347.2,135.5 360.4,127.8 373.6,121.4 386.8,121.4 400.0,118.2 413.2,116.8 426.4,112.8 439.6,112.8 452.8,107.7 466.0,107.7 479.2,107.7 492.4,94.0 505.6,94.0 518.8,91.4 532.0,91.4 545.2,91.4 558.4,91.4 571.6,91.4 584.8,91.4 598.0,91.4 611.2,85.8 624.4,81.5 637.6,81.5 650.8,81.5 664.0,81.5 677.2,81.5 690.4,81.5 703.6,78.8 716.8,69.1 730.0,69.1"/>
+  <circle class="mk" cx="716.8" cy="69.1" r="3.2"/>
+  <text class="val" x="620" y="86">0.5112 at epoch 49</text>
+</svg>

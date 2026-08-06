@@ -1,1 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" aria-labelledby="title desc" role="img" viewBox="0 0 760 430"><title id="title">Analytical Amdahl strong-scaling sensitivity</title><desc id="desc">Not measured. Speedup at 8 GPUs: 4.71× (10% serial), 3.33× (20%), 2.32× (35%).</desc><style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub,.tick{font-size:11px;fill:#666}.tick{font-size:10px}.label{font-size:11px;font-weight:600}.grid{stroke:#d8d8d8;stroke-width:1}.line{fill:none;stroke-width:2.5}.dash{stroke-dasharray:6 5}</style><rect width="760" height="430" fill="#fff"/><text x="42" y="35" class="title">Analytical Amdahl strong-scaling sensitivity</text><text x="42" y="55" class="sub">Not measured. Speedup at 8 GPUs: 4.71× (10% serial), 3.33× (20%), 2.32× (35%).</text><line x1="72" x2="712" y1="355" y2="355" class="grid"/><text x="62" y="359" class="tick" text-anchor="end">0</text><line x1="72" x2="712" y1="288.8" y2="288.8" class="grid"/><text x="62" y="292.8" class="tick" text-anchor="end">2</text><line x1="72" x2="712" y1="222.5" y2="222.5" class="grid"/><text x="62" y="226.5" class="tick" text-anchor="end">4</text><line x1="72" x2="712" y1="156.2" y2="156.2" class="grid"/><text x="62" y="160.2" class="tick" text-anchor="end">6</text><line x1="72" x2="712" y1="90" y2="90" class="grid"/><text x="62" y="94" class="tick" text-anchor="end">8</text><path stroke="#15803d" d="M 72.0 321.9 L 285.3 294.8 L 498.7 253.1 L 712.0 199.1" class="line"/><circle cx="72" cy="321.9" r="4" fill="#15803d"/><circle cx="285.3" cy="294.8" r="4" fill="#15803d"/><circle cx="498.7" cy="253.1" r="4" fill="#15803d"/><circle cx="712" cy="199.1" r="4" fill="#15803d"/><path stroke="#2563eb" stroke-dasharray="9 4" d="M 72.0 321.9 L 285.3 299.8 L 498.7 272.2 L 712.0 244.6" class="line"/><rect width="8" height="8" x="68" y="317.9" fill="#2563eb"/><rect width="8" height="8" x="281.3" y="295.8" fill="#2563eb"/><rect width="8" height="8" x="494.7" y="268.2" fill="#2563eb"/><rect width="8" height="8" x="708" y="240.6" fill="#2563eb"/><path stroke="#d97706" stroke-dasharray="3 4" d="M 72.0 321.9 L 285.3 305.9 L 498.7 290.4 L 712.0 278.2" class="line"/><path fill="#d97706" d="M 72.0 316.9 L 77.0 325.9 L 67.0 325.9 Z"/><path fill="#d97706" d="M 285.3 300.9 L 290.3 309.9 L 280.3 309.9 Z"/><path fill="#d97706" d="M 498.7 285.4 L 503.7 294.4 L 493.7 294.4 Z"/><path fill="#d97706" d="M 712.0 273.2 L 717.0 282.2 L 707.0 282.2 Z"/><path stroke="#666" d="M 72.0 321.9 L 285.3 288.8 L 498.7 222.5 L 712.0 90.0" class="line dash"/><text x="72" y="377" class="label" text-anchor="middle">1 GPU</text><text x="285.3" y="377" class="label" text-anchor="middle">2 GPU</text><text x="498.7" y="377" class="label" text-anchor="middle">4 GPU</text><text x="712" y="377" class="label" text-anchor="middle">8 GPU</text><text x="18" y="230" class="label" transform="rotate(-90 18 230)">Theoretical speedup</text><line x1="390" x2="414" y1="400" y2="400" stroke="#15803d" stroke-width="3"/><text x="420" y="404" class="tick">10%</text><line x1="465" x2="489" y1="400" y2="400" stroke="#2563eb" stroke-width="3"/><text x="495" y="404" class="tick">20%</text><line x1="540" x2="564" y1="400" y2="400" stroke="#d97706" stroke-width="3"/><text x="570" y="404" class="tick">35% serial</text><line x1="645" x2="669" y1="400" y2="400" stroke="#666" stroke-dasharray="5 4" stroke-width="2"/><text x="675" y="404" class="tick">Ideal</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Line chart of analytical Amdahl speedup curves for serial fractions of ten, twenty and thirty-five percent">
+  <title>Amdahl speedup bound by serial fraction - analytical, not measured</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <text class="ttl" x="20" y="26">Amdahl speedup bound by serial fraction - analytical, not measured</text>
+  <line class="grid" x1="70" y1="345" x2="730" y2="345"/>
+  <text class="lbl" x="62" y="349" text-anchor="end">1</text>
+  <line class="grid" x1="70" y1="274" x2="730" y2="274"/>
+  <text class="lbl" x="62" y="278" text-anchor="end">2</text>
+  <line class="grid" x1="70" y1="203" x2="730" y2="203"/>
+  <text class="lbl" x="62" y="207" text-anchor="end">3</text>
+  <line class="grid" x1="70" y1="132" x2="730" y2="132"/>
+  <text class="lbl" x="62" y="136" text-anchor="end">4</text>
+  <line class="grid" x1="70" y1="60" x2="730" y2="60"/>
+  <text class="lbl" x="62" y="64" text-anchor="end">5</text>
+  <line class="ax" x1="70" y1="40" x2="70" y2="374"/>
+  <line class="ax" x1="70" y1="374" x2="730" y2="374"/>
+  <text class="lbl" x="70" y="394" text-anchor="middle">1</text>
+  <text class="lbl" x="164" y="394" text-anchor="middle">2</text>
+  <text class="lbl" x="259" y="394" text-anchor="middle">3</text>
+  <text class="lbl" x="353" y="394" text-anchor="middle">4</text>
+  <text class="lbl" x="447" y="394" text-anchor="middle">5</text>
+  <text class="lbl" x="541" y="394" text-anchor="middle">6</text>
+  <text class="lbl" x="636" y="394" text-anchor="middle">7</text>
+  <text class="lbl" x="730" y="394" text-anchor="middle">8</text>
+  <text class="lbl" x="400" y="418" text-anchor="middle">GPUs (N)</text>
+  <polyline class="s" points="70.0,345.5 164.3,287.1 258.6,238.5 352.9,197.4 447.1,162.1 541.4,131.6 635.7,104.8 730.0,81.2"/>
+  <circle class="mk" cx="164.3" cy="287.1" r="3.2"/>
+  <circle class="mk" cx="352.9" cy="197.4" r="3.2"/>
+  <circle class="mk" cx="730.0" cy="81.2" r="3.2"/>
+  <line class="s" x1="510" y1="58" x2="546" y2="58"/>
+  <text class="lbl" x="554" y="62">10% serial</text>
+  <polyline class="s" stroke-dasharray="9 5" points="70.0,345.5 164.3,297.9 258.6,264.0 352.9,238.5 447.1,218.7 541.4,202.9 635.7,189.9 730.0,179.1"/>
+  <circle class="mk" cx="164.3" cy="297.9" r="3.2"/>
+  <circle class="mk" cx="352.9" cy="238.5" r="3.2"/>
+  <circle class="mk" cx="730.0" cy="179.1" r="3.2"/>
+  <line class="s" stroke-dasharray="9 5" x1="510" y1="80" x2="546" y2="80"/>
+  <text class="lbl" x="554" y="84">20% serial</text>
+  <polyline class="s" stroke-dasharray="2.5 4.5" points="70.0,345.5 164.3,311.1 258.6,291.0 352.9,277.7 447.1,268.2 541.4,261.2 635.7,255.8 730.0,251.4"/>
+  <circle class="mk" cx="164.3" cy="311.1" r="3.2"/>
+  <circle class="mk" cx="352.9" cy="277.7" r="3.2"/>
+  <circle class="mk" cx="730.0" cy="251.4" r="3.2"/>
+  <line class="s" stroke-dasharray="2.5 4.5" x1="510" y1="102" x2="546" y2="102"/>
+  <text class="lbl" x="554" y="106">35% serial</text>
+</svg>

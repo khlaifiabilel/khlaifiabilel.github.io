@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" role="img" aria-label="Horizontal bar chart of per-class IoU for eight crop classes with pixel support labels">
+  <title>Per-class IoU with 10 m pixel support - measured, fold 5</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="360" fill="#ffffff"/>
+  <text class="ttl" x="20" y="28">Per-class IoU with 10 m pixel support - measured, fold 5</text>
+  <line class="grid" x1="190" y1="42" x2="190" y2="308"/>
+  <text class="lbl" x="190" y="324" text-anchor="middle">0</text>
+  <line class="grid" x1="288" y1="42" x2="288" y2="308"/>
+  <text class="lbl" x="288" y="324" text-anchor="middle">0.2</text>
+  <line class="grid" x1="387" y1="42" x2="387" y2="308"/>
+  <text class="lbl" x="387" y="324" text-anchor="middle">0.4</text>
+  <line class="grid" x1="485" y1="42" x2="485" y2="308"/>
+  <text class="lbl" x="485" y="324" text-anchor="middle">0.6</text>
+  <line class="grid" x1="584" y1="42" x2="584" y2="308"/>
+  <text class="lbl" x="584" y="324" text-anchor="middle">0.8</text>
+  <line class="grid" x1="682" y1="42" x2="682" y2="308"/>
+  <text class="lbl" x="682" y="324" text-anchor="middle">1</text>
+  <line class="ax" x1="190" y1="42" x2="190" y2="308"/>
+  <text class="lbl" x="182" y="66" text-anchor="end">Corn</text>
+  <rect class="bar" x="190" y="52" width="397.5" height="20"/>
+  <text class="val" x="594.5" y="67">0.8079 &#183; 620,357 px</text>
+  <text class="lbl" x="182" y="99" text-anchor="end">Soft winter wheat</text>
+  <rect class="bar" x="190" y="85" width="384.4" height="20"/>
+  <text class="val" x="581.4" y="100">0.7812 &#183; 580,631 px</text>
+  <text class="lbl" x="182" y="132" text-anchor="end">Winter rapeseed</text>
+  <rect class="bar" x="190" y="118" width="383.3" height="20"/>
+  <text class="val" x="580.3" y="133">0.7790 &#183; 157,965 px</text>
+  <text class="lbl" x="182" y="165" text-anchor="end">Beet</text>
+  <rect class="bar" x="190" y="151" width="376.1" height="20"/>
+  <text class="val" x="573.1" y="166">0.7645 &#183; 67,567 px</text>
+  <text class="lbl" x="182" y="198" text-anchor="end">Soybeans</text>
+  <rect class="bar" x="190" y="184" width="373.3" height="20"/>
+  <text class="val" x="570.3" y="199">0.7587 &#183; 71,771 px</text>
+  <text class="lbl" x="182" y="231" text-anchor="end">Winter triticale</text>
+  <rect class="bar" x="190" y="217" width="63.7" height="20"/>
+  <text class="val" x="260.7" y="232">0.1294 &#183; 53,892 px</text>
+  <text class="lbl" x="182" y="264" text-anchor="end">Mixed cereal</text>
+  <rect class="bar" x="190" y="250" width="51.8" height="20"/>
+  <text class="val" x="248.8" y="265">0.1052 &#183; 49,537 px</text>
+  <text class="lbl" x="182" y="297" text-anchor="end">Sorghum</text>
+  <rect class="bar" x="190" y="283" width="9.1" height="20"/>
+  <text class="val" x="206.1" y="298">0.0184 &#183; 53,295 px</text>
+  <text class="lbl" x="20" y="350">Support alone does not explain the ordering: beet and soybeans outperform triticale and sorghum at similar support.</text>
+</svg>

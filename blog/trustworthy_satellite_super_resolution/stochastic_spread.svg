@@ -1,34 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" viewBox="0 0 760 430" role="img" aria-labelledby="title desc">
-<title id="title">Stochastic spread and residual association</title>
-<desc id="desc">Five stochastic passes at 25 DDIM steps; spread is not calibrated uncertainty</desc>
-<style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub{font-size:11px;fill:#666}.tick{font-size:10px;fill:#666}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}</style>
-<rect width="760" height="430" fill="#ffffff"/>
-<text x="42" y="35" class="title">Stochastic spread and residual association</text>
-<text x="42" y="55" class="sub">Five stochastic passes at 25 DDIM steps; spread is not calibrated uncertainty</text>
-<line x1="72" y1="350.0" x2="712" y2="350.0" class="grid"/>
-<text x="62" y="354.0" text-anchor="end" class="tick">0.00</text>
-<line x1="72" y1="298.0" x2="712" y2="298.0" class="grid"/>
-<text x="62" y="302.0" text-anchor="end" class="tick">0.01</text>
-<line x1="72" y1="246.0" x2="712" y2="246.0" class="grid"/>
-<text x="62" y="250.0" text-anchor="end" class="tick">0.02</text>
-<line x1="72" y1="194.0" x2="712" y2="194.0" class="grid"/>
-<text x="62" y="198.0" text-anchor="end" class="tick">0.03</text>
-<line x1="72" y1="142.0" x2="712" y2="142.0" class="grid"/>
-<text x="62" y="146.0" text-anchor="end" class="tick">0.04</text>
-<line x1="72" y1="90.0" x2="712" y2="90.0" class="grid"/>
-<text x="62" y="94.0" text-anchor="end" class="tick">0.05</text>
-<rect x="201.2" y="320.6" width="44" height="29.4" fill="#2563eb"/>
-<text x="223.2" y="313.6" text-anchor="middle" class="value">0.006</text>
-<rect x="257.2" y="295.0" width="44" height="55.0" fill="#d97706"/>
-<text x="279.2" y="288.0" text-anchor="middle" class="value">0.011</text>
-<text x="251.2" y="374" text-anchor="middle" class="label">Rural</text>
-<text x="251.2" y="390" text-anchor="middle" class="tick">spread-residual r = 0.37</text>
-<rect x="482.8" y="248.2" width="44" height="101.8" fill="#2563eb"/>
-<text x="504.8" y="241.2" text-anchor="middle" class="value">0.020</text>
-<rect x="538.8" y="107.4" width="44" height="242.6" fill="#d97706"/>
-<text x="560.8" y="100.4" text-anchor="middle" class="value">0.047</text>
-<text x="532.8" y="374" text-anchor="middle" class="label">Urban</text>
-<text x="532.8" y="390" text-anchor="middle" class="tick">spread-residual r = 0.42</text>
-<rect x="555" y="404" width="11" height="11" fill="#2563eb"/><text x="572" y="413" class="tick">Mean 2σ spread</text>
-<rect x="650" y="404" width="11" height="11" fill="#d97706"/><text x="667" y="413" class="tick">p95</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 194" role="img" aria-label="Paired bar chart of mean and p95 two-sigma stochastic spread for the rural and urban examples, each row normalised to the urban value with true values labelled">
+  <title>Stochastic spread across five 25-step passes - measured</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="194" fill="#ffffff"/>
+  <text class="ttl" x="20" y="28">Stochastic spread across five 25-step passes - measured</text>
+  <rect class="bar" x="466" y="16" width="16" height="12"/>
+  <text class="lbl" x="488" y="27">Rural</text>
+  <rect class="bar2" x="566" y="16" width="16" height="12"/>
+  <text class="lbl" x="588" y="27">Urban</text>
+  <line class="ax" x1="236" y1="48" x2="236" y2="144"/>
+  <text class="lbl" x="228" y="74" text-anchor="end">Mean 2&#963; spread</text>
+  <rect class="bar" x="236" y="58" width="127.3" height="14"/>
+  <text class="val" x="370.3" y="69">0.0057</text>
+  <rect class="bar2" x="236" y="75" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="86">0.0196</text>
+  <text class="lbl" x="228" y="122" text-anchor="end">p95 2&#963; spread</text>
+  <rect class="bar" x="236" y="106" width="99.8" height="14"/>
+  <text class="val" x="342.8" y="117">0.0106</text>
+  <rect class="bar2" x="236" y="123" width="440.0" height="14"/>
+  <text class="val" x="683.0" y="134">0.0467</text>
+  <text class="lbl" x="20" y="184">Bars normalised per row to the urban value. Spread-residual Pearson r: 0.375 (rural), 0.421 (urban). Not calibrated uncertainty.</text>
 </svg>

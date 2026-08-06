@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 393" role="img" aria-label="Horizontal bar chart of the measured fold-5 internal metrics for the v2.0.0 checkpoint">
+  <title>Fold-5 internal benchmark, v2.0.0 checkpoint - measured, one seed</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="393" fill="#ffffff"/>
+  <text class="ttl" x="20" y="28">Fold-5 internal benchmark, v2.0.0 checkpoint - measured, one seed</text>
+  <line class="grid" x1="250" y1="42" x2="250" y2="341"/>
+  <text class="lbl" x="250" y="357" text-anchor="middle">0</text>
+  <line class="grid" x1="336" y1="42" x2="336" y2="341"/>
+  <text class="lbl" x="336" y="357" text-anchor="middle">0.2</text>
+  <line class="grid" x1="423" y1="42" x2="423" y2="341"/>
+  <text class="lbl" x="423" y="357" text-anchor="middle">0.4</text>
+  <line class="grid" x1="509" y1="42" x2="509" y2="341"/>
+  <text class="lbl" x="509" y="357" text-anchor="middle">0.6</text>
+  <line class="grid" x1="596" y1="42" x2="596" y2="341"/>
+  <text class="lbl" x="596" y="357" text-anchor="middle">0.8</text>
+  <line class="grid" x1="682" y1="42" x2="682" y2="341"/>
+  <text class="lbl" x="682" y="357" text-anchor="middle">1</text>
+  <line class="ax" x1="250" y1="42" x2="250" y2="341"/>
+  <text class="lbl" x="242" y="66" text-anchor="end">Overall pixel accuracy</text>
+  <rect class="bar" x="250" y="52" width="345.5" height="20"/>
+  <text class="val" x="602.5" y="67">0.7997</text>
+  <text class="lbl" x="242" y="99" text-anchor="end">Macro IoU (incl. background)</text>
+  <rect class="bar" x="250" y="85" width="210.8" height="20"/>
+  <text class="val" x="467.8" y="100">0.4879</text>
+  <text class="lbl" x="242" y="132" text-anchor="end">Foreground macro IoU</text>
+  <rect class="bar" x="250" y="118" width="204.9" height="20"/>
+  <text class="val" x="461.9" y="133">0.4743</text>
+  <text class="lbl" x="242" y="165" text-anchor="end">Macro F1</text>
+  <rect class="bar" x="250" y="151" width="265.3" height="20"/>
+  <text class="val" x="522.3" y="166">0.6142</text>
+  <text class="lbl" x="242" y="198" text-anchor="end">Boundary F1 (1-px tolerance)</text>
+  <rect class="bar" x="250" y="184" width="358.5" height="20"/>
+  <text class="val" x="615.5" y="199">0.8298</text>
+  <text class="lbl" x="242" y="231" text-anchor="end">Crop-presence macro F1</text>
+  <rect class="bar" x="250" y="217" width="106.1" height="20"/>
+  <text class="val" x="363.1" y="232">0.2455</text>
+  <text class="lbl" x="242" y="264" text-anchor="end">Crop-presence micro F1</text>
+  <rect class="bar" x="250" y="250" width="199.0" height="20"/>
+  <text class="val" x="456.0" y="265">0.4607</text>
+  <text class="lbl" x="242" y="297" text-anchor="end">Pixel top-label ECE (lower is better)</text>
+  <rect class="bar" x="250" y="283" width="31.7" height="20"/>
+  <text class="val" x="288.7" y="298">0.0733</text>
+  <text class="lbl" x="242" y="330" text-anchor="end">SPOT diagnostic SSIM</text>
+  <rect class="bar" x="250" y="316" width="133.8" height="20"/>
+  <text class="val" x="390.8" y="331">0.3097</text>
+  <text class="lbl" x="20" y="383">SPOT diagnostic PSNR: 11.38 dB (decibel scale, not shown as a bar). All values from the v2.0.0 benchmark report.</text>
+</svg>

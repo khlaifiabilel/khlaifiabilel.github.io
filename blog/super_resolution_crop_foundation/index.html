@@ -271,43 +271,25 @@
       <section id="results">
         <h2>5. Results</h2>
         <p>The selected checkpoint reached 0.5112 validation macro IoU at epoch 49. The final epoch fell to 0.4915, so the fixed-budget run does not demonstrate convergence.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Fold-5 internal metric</th><th>Measured value</th></tr></thead>
-            <tbody>
-              <tr><td>Overall pixel accuracy</td><td>0.7997</td></tr>
-              <tr><td>Macro IoU, including background</td><td>0.4879</td></tr>
-              <tr><td>Foreground macro IoU</td><td>0.4743</td></tr>
-              <tr><td>Macro F1</td><td>0.6142</td></tr>
-              <tr><td>Boundary F1, macro-averaged across patches, one-pixel Chebyshev tolerance on the 10 m grid</td><td>0.8298</td></tr>
-              <tr><td>Crop-presence macro / micro F1</td><td>0.2455 / 0.4607</td></tr>
-              <tr><td>Pixel top-label ECE</td><td>0.0733</td></tr>
-              <tr><td>SPOT diagnostic PSNR / SSIM</td><td>11.38 dB / 0.3097</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <figure class="paper-figure">
+          <a href="fold5_metrics.svg" target="_blank" rel="noopener">
+            <img src="fold5_metrics.svg" alt="Horizontal bar chart of the measured fold-5 internal metrics for the v2.0.0 checkpoint" width="760" height="393" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 3.</strong> Measured fold-5 internal metrics for the selected v2.0.0 checkpoint. Boundary F1 is macro-averaged across patches with a one-pixel Chebyshev tolerance on the 10 m grid; ECE is lower-is-better; the SPOT diagnostics (PSNR 11.38 dB, SSIM 0.3097) are cross-sensor diagnostics, not same-date super-resolution scores.</figcaption>
+        </figure>
         <h3>Class-conditional behaviour</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Crop class</th><th>10 m pixels</th><th>IoU</th></tr></thead>
-            <tbody>
-              <tr><td>Corn</td><td>620,357</td><td>0.8079</td></tr>
-              <tr><td>Soft winter wheat</td><td>580,631</td><td>0.7812</td></tr>
-              <tr><td>Winter rapeseed</td><td>157,965</td><td>0.7790</td></tr>
-              <tr><td>Beet</td><td>67,567</td><td>0.7645</td></tr>
-              <tr><td>Soybeans</td><td>71,771</td><td>0.7587</td></tr>
-              <tr><td>Winter triticale</td><td>53,892</td><td>0.1294</td></tr>
-              <tr><td>Mixed cereal</td><td>49,537</td><td>0.1052</td></tr>
-              <tr><td>Sorghum</td><td>53,295</td><td>0.0184</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <figure class="paper-figure">
+          <a href="class_iou.svg" target="_blank" rel="noopener">
+            <img src="class_iou.svg" alt="Horizontal bar chart of per-class IoU for eight crop classes with 10 m pixel support labels" width="760" height="360" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 4.</strong> Per-class IoU on the fold-5 internal benchmark with 10 m pixel support printed beside each bar.</figcaption>
+        </figure>
         <p>Performance is strongly class dependent, but support alone does not explain the ordering: beet and soybeans substantially outperform winter triticale and sorghum despite supports of the same order of magnitude. Class imbalance, label heterogeneity and spectral or phenological confusion are plausible explanations, not established causes. The low per-class IoUs and crop-presence macro F1 indicate heterogeneous operational risk more clearly than overall pixel accuracy.</p>
         <p>The SPOT metrics are diagnostics, not same-date super-resolution scores. Sensor response, atmosphere, illumination, acquisition date and registration all differ. They must not be interpreted as proof of calibrated 1 m optical reconstruction.</p>
         <p>In a separate four-patch visualisation diagnostic, model RGB was effectively tied with nearest-neighbour repetition of the Sentinel-2 RGB anchor. Because that comparison covered only four patches and included no full-fold repeat, bicubic baseline or zero-detail baseline, the reported PSNR and SSIM do not establish an improvement attributable to learned detail.</p>
         <div class="callout">
           <strong>Statistical interpretation</strong>
-          <p>No repeated seeds, confidence intervals, hypothesis tests or common-protocol baselines are available. The table is a descriptive account of one selected checkpoint on one exposed fold; differences from external publications cannot be interpreted as statistically meaningful model comparisons.</p>
+          <p>No repeated seeds, confidence intervals, hypothesis tests or common-protocol baselines are available. Figures 3 and 4 are a descriptive account of one selected checkpoint on one exposed fold; differences from external publications cannot be interpreted as statistically meaningful model comparisons.</p>
         </div>
         <div class="callout">
           <strong>Status update &middot; 7 August 2026</strong>

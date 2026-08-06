@@ -1,1 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="430" aria-labelledby="title desc" role="img" viewBox="0 0 760 430"><title id="title">Single-GPU training-step throughput</title><desc id="desc">Measured RTX 4080 synthetic compute benchmark; higher is better; data loading excluded</desc><style>text{font-family:Arial,sans-serif;fill:#101010}.title{font-size:20px;font-weight:700}.sub,.tick{font-size:11px;fill:#666}.tick{font-size:10px}.label{font-size:11px;font-weight:600}.value{font-size:10px;font-weight:700}.grid{stroke:#d8d8d8;stroke-width:1}.axis{stroke:#101010;stroke-width:1.3}</style><rect width="760" height="430" fill="#fff"/><text x="42" y="35" class="title">Single-GPU training-step throughput</text><text x="42" y="55" class="sub">Measured RTX 4080 synthetic compute benchmark; higher is better; data loading excluded</text><line x1="72" x2="712" y1="355" y2="355" class="grid"/><text x="62" y="359" class="tick" text-anchor="end">0</text><line x1="72" x2="712" y1="310.8" y2="310.8" class="grid"/><text x="62" y="314.8" class="tick" text-anchor="end">10</text><line x1="72" x2="712" y1="266.7" y2="266.7" class="grid"/><text x="62" y="270.7" class="tick" text-anchor="end">20</text><line x1="72" x2="712" y1="222.5" y2="222.5" class="grid"/><text x="62" y="226.5" class="tick" text-anchor="end">30</text><line x1="72" x2="712" y1="178.3" y2="178.3" class="grid"/><text x="62" y="182.3" class="tick" text-anchor="end">40</text><line x1="72" x2="712" y1="134.2" y2="134.2" class="grid"/><text x="62" y="138.2" class="tick" text-anchor="end">50</text><line x1="72" x2="712" y1="90" y2="90" class="grid"/><text x="62" y="94" class="tick" text-anchor="end">60</text><rect width="48" height="147.7" x="126.7" y="207.3" fill="#d97706"/><text x="150.7" y="200.3" class="value" text-anchor="middle">33.4</text><rect width="48" height="180.1" x="182.7" y="174.9" fill="#2563eb"/><text x="206.7" y="167.9" class="value" text-anchor="middle">40.8</text><text x="178.7" y="377" class="label" text-anchor="middle">Batch 1</text><rect width="48" height="160.7" x="340" y="194.3" fill="#d97706"/><text x="364" y="187.3" class="value" text-anchor="middle">36.4</text><rect width="48" height="225.4" x="396" y="129.6" fill="#2563eb"/><text x="420" y="122.6" class="value" text-anchor="middle">51.0</text><text x="392" y="377" class="label" text-anchor="middle">Batch 2</text><rect width="48" height="168.3" x="553.3" y="186.7" fill="#d97706"/><text x="577.3" y="179.7" class="value" text-anchor="middle">38.1</text><rect width="48" height="239.9" x="609.3" y="115.1" fill="#2563eb"/><text x="633.3" y="108.1" class="value" text-anchor="middle">54.3</text><text x="605.3" y="377" class="label" text-anchor="middle">Batch 4</text><line x1="72" x2="712" y1="355" y2="355" class="axis"/><text x="18" y="230" class="label" transform="rotate(-90 18 230)">Samples per second</text><rect width="12" height="12" x="500" y="395" fill="#d97706"/><text x="518" y="405" class="tick">FP32</text><rect width="12" height="12" x="575" y="395" fill="#2563eb"/><text x="593" y="405" class="tick">AMP FP16</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" role="img" aria-label="Grouped bar chart of measured FP32 and AMP FP16 throughput at batch sizes one, two and four">
+  <title>Measured compute-only throughput, RTX 4080 (samples/s)</title>
+  <style>
+    .ax    { stroke: #cfcfcf; stroke-width: 1; }
+    .grid  { stroke: #e9e9e9; stroke-width: 1; }
+    .lbl   { font: 13px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #6b6b6b; }
+    .val   { font: 12px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .ttl   { font: 600 14px -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: #0a0a0a; }
+    .s     { fill: none; stroke: #0a0a0a; stroke-width: 2; }
+    .mk    { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+    .bar   { fill: #0a0a0a; }
+    .bar2  { fill: #ffffff; stroke: #0a0a0a; stroke-width: 1.6; }
+  </style>
+  <rect width="760" height="430" fill="#ffffff"/>
+  <text class="ttl" x="20" y="26">Measured compute-only throughput, RTX 4080 (samples/s)</text>
+  <line class="grid" x1="70" y1="374" x2="730" y2="374"/>
+  <text class="lbl" x="62" y="378" text-anchor="end">0</text>
+  <line class="grid" x1="70" y1="319" x2="730" y2="319"/>
+  <text class="lbl" x="62" y="323" text-anchor="end">10</text>
+  <line class="grid" x1="70" y1="265" x2="730" y2="265"/>
+  <text class="lbl" x="62" y="269" text-anchor="end">20</text>
+  <line class="grid" x1="70" y1="210" x2="730" y2="210"/>
+  <text class="lbl" x="62" y="214" text-anchor="end">30</text>
+  <line class="grid" x1="70" y1="155" x2="730" y2="155"/>
+  <text class="lbl" x="62" y="159" text-anchor="end">40</text>
+  <line class="grid" x1="70" y1="101" x2="730" y2="101"/>
+  <text class="lbl" x="62" y="105" text-anchor="end">50</text>
+  <line class="grid" x1="70" y1="46" x2="730" y2="46"/>
+  <text class="lbl" x="62" y="50" text-anchor="end">60</text>
+  <line class="ax" x1="70" y1="40" x2="70" y2="374"/>
+  <line class="ax" x1="70" y1="374" x2="730" y2="374"/>
+  <rect class="bar" x="116" y="191" width="58" height="183"/>
+  <rect class="bar2" x="186" y="151" width="58" height="223"/>
+  <text class="val" x="145" y="184" text-anchor="middle">33.4</text>
+  <text class="val" x="215" y="144" text-anchor="middle">40.8</text>
+  <text class="lbl" x="180" y="394" text-anchor="middle">1</text>
+  <rect class="bar" x="336" y="175" width="58" height="199"/>
+  <rect class="bar2" x="406" y="95" width="58" height="279"/>
+  <text class="val" x="365" y="168" text-anchor="middle">36.4</text>
+  <text class="val" x="435" y="88" text-anchor="middle">51.0</text>
+  <text class="lbl" x="400" y="394" text-anchor="middle">2</text>
+  <rect class="bar" x="556" y="166" width="58" height="208"/>
+  <rect class="bar2" x="626" y="77" width="58" height="297"/>
+  <text class="val" x="585" y="159" text-anchor="middle">38.1</text>
+  <text class="val" x="655" y="70" text-anchor="middle">54.3</text>
+  <text class="lbl" x="620" y="394" text-anchor="middle">4</text>
+  <text class="lbl" x="400" y="418" text-anchor="middle">batch size</text>
+  <rect class="bar" x="84" y="48" width="16" height="12"/>
+  <text class="lbl" x="106" y="59">FP32</text>
+  <rect class="bar2" x="188" y="48" width="16" height="12"/>
+  <text class="lbl" x="210" y="59">AMP FP16</text>
+</svg>

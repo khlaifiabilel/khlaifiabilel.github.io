@@ -164,20 +164,7 @@
         </figure>
 
         <h3>Compute-only benchmark</h3>
-        <p>Each configuration used 10 warm-up steps and 30 measured steps. CUDA was synchronised after every step. Throughput is computed from median step latency. Synthetic tensors remove storage variance but do not represent end-to-end data throughput.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Precision</th><th>Batch</th><th>Median step</th><th>p95 step</th><th>Samples/s</th><th>Peak GiB</th></tr></thead>
-            <tbody>
-              <tr><td>FP32</td><td>1</td><td>29.91 ms</td><td>30.43 ms</td><td>33.4</td><td>0.87</td></tr>
-              <tr><td>FP32</td><td>2</td><td>54.97 ms</td><td>55.38 ms</td><td>36.4</td><td>1.68</td></tr>
-              <tr><td>FP32</td><td>4</td><td>105.00 ms</td><td>105.44 ms</td><td>38.1</td><td>3.29</td></tr>
-              <tr><td>AMP FP16</td><td>1</td><td>24.52 ms</td><td>25.49 ms</td><td>40.8</td><td>0.67</td></tr>
-              <tr><td>AMP FP16</td><td>2</td><td>39.20 ms</td><td>39.82 ms</td><td>51.0</td><td>1.28</td></tr>
-              <tr><td>AMP FP16</td><td>4</td><td>73.65 ms</td><td>74.94 ms</td><td>54.3</td><td>2.50</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p>Each configuration used 10 warm-up steps and 30 measured steps. CUDA was synchronised after every step. Throughput is computed from median step latency. Synthetic tensors remove storage variance but do not represent end-to-end data throughput. Exact values for every configuration are in the measured benchmark JSON linked below.</p>
 
         <figure class="paper-figure">
           <a href="throughput_by_batch.svg" target="_blank" rel="noopener">
@@ -191,6 +178,13 @@
             <img src="memory_by_batch.svg" alt="Measured FP32 and AMP FP16 peak allocated GPU memory at batch sizes one, two and four" width="760" height="430" loading="lazy">
           </a>
           <figcaption><strong>Figure 3.</strong> AMP reduced peak allocated memory by 22.7% to 24.0% across the tested batches. Batch-4 AMP used 2.50 GiB compared with 3.29 GiB for FP32.</figcaption>
+        </figure>
+
+        <figure class="paper-figure">
+          <a href="step_latency_by_batch.svg" target="_blank" rel="noopener">
+            <img src="step_latency_by_batch.svg" alt="Measured FP32 and AMP FP16 median optimisation-step latency with p95 markers at batch sizes one, two and four" width="760" height="430" loading="lazy">
+          </a>
+          <figcaption><strong>Figure 4.</strong> Measured median step latency; dashed ticks mark the p95 of the 30 measured steps. The tight median-to-p95 gaps reflect synchronised, storage-free steps rather than end-to-end stability.</figcaption>
         </figure>
 
         <h3>Interpretation</h3>
@@ -214,23 +208,13 @@
         <div class="equation" role="img" aria-label="Amdahl speedup equation">
           S(N,s) = 1 / [s + (1 &minus; s)/N]
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>GPUs</th><th>10% serial</th><th>20% serial</th><th>35% serial</th></tr></thead>
-            <tbody>
-              <tr><td>2</td><td>1.82&times; / 90.9%</td><td>1.67&times; / 83.3%</td><td>1.48&times; / 74.1%</td></tr>
-              <tr><td>4</td><td>3.08&times; / 76.9%</td><td>2.50&times; / 62.5%</td><td>1.95&times; / 48.8%</td></tr>
-              <tr><td>8</td><td>4.71&times; / 58.8%</td><td>3.33&times; / 41.7%</td><td>2.32&times; / 29.0%</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p>Each cell reports speedup and efficiency. The 20% scenario reaches only 3.33&times; on eight GPUs. This is a mathematical sensitivity analysis, not a prediction that the workload has a 20% serial fraction.</p>
+        <p>At a 10% serial fraction the bound is 4.71&times; on eight GPUs (58.8% efficiency); at 20% it is 2.50&times; on four and only 3.33&times; on eight (62.5% and 41.7%); at 35% eight GPUs deliver 2.32&times; at 29.0% efficiency. This is a mathematical sensitivity analysis, not a prediction that the workload has any particular serial fraction.</p>
 
         <figure class="paper-figure">
           <a href="analytical_ddp_scaling.svg" target="_blank" rel="noopener">
             <img src="analytical_ddp_scaling.svg" alt="Analytical Amdahl speedup curves for serial fractions of 10, 20 and 35 percent" width="760" height="430" loading="lazy">
           </a>
-          <figcaption><strong>Figure 4.</strong> Analytical Amdahl sensitivity scenarios. None of these multi-GPU points is measured. Their purpose is to show how rapidly fixed work limits useful GPU count.</figcaption>
+          <figcaption><strong>Figure 5.</strong> Analytical Amdahl sensitivity scenarios; markers at 2, 4 and 8 GPUs. None of these multi-GPU points is measured. Their purpose is to show how rapidly fixed work limits useful GPU count.</figcaption>
         </figure>
 
         <h3>Ring all-reduce traffic</h3>

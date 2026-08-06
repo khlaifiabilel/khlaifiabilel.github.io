@@ -151,7 +151,7 @@
         <div class="equation" role="img" aria-label="Observation consistency loss is the mean absolute difference between box-averaged output and low-resolution input">
           L<sub>obs,b</sub> = (1/HW) &Sigma;<sub>i=1</sub><sup>HW</sup> |P<sub>4</sub>(x&#770;)<sub>i,b</sub> &minus; y<sub>i,b</sub>|
         </div>
-        <p><em>P<sub>4</sub></em> is 4&times;4 box averaging. It is not a Sentinel-2 MTF or PSF model, so this metric tests array-level consistency only. The results table reports <code>max_b L_obs,b</code> and identifies the corresponding band.</p>
+        <p><em>P<sub>4</sub></em> is 4&times;4 box averaging. It is not a Sentinel-2 MTF or PSF model, so this metric tests array-level consistency only. Figure 2 reports <code>max_b L_obs,b</code> and identifies the corresponding band.</p>
 
         <h3>Spectral angle</h3>
         <p>For each low-grid pixel, the angle between observed and downsampled four-band vectors is:</p>
@@ -176,25 +176,11 @@
 
       <section id="results">
         <h2>4. Measured case results</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Diagnostic</th><th>Rural</th><th>Urban</th></tr></thead>
-            <tbody>
-              <tr><td>Mean spectral angle</td><td>0.827°</td><td>2.031°</td></tr>
-              <tr><td>p95 spectral angle</td><td>1.641°</td><td>5.416°</td></tr>
-              <tr><td>NDVI MAE after box averaging</td><td>0.0123</td><td>0.0280</td></tr>
-              <tr><td>p95 absolute NDVI error</td><td>0.0315</td><td>0.0848</td></tr>
-              <tr><td>Largest per-band consistency MAE</td><td>0.00307, B08</td><td>0.01300, B08</td></tr>
-              <tr><td>Learned / bilinear gradient energy</td><td>3.23&times;</td><td>7.05&times;</td></tr>
-            </tbody>
-          </table>
-        </div>
-
         <figure class="paper-figure">
           <a href="consistency_diagnostics.svg" target="_blank" rel="noopener">
-            <img src="consistency_diagnostics.svg" alt="Spectral angle, scaled NDVI error and gradient-energy ratio for the rural and urban examples" width="760" height="430" loading="lazy">
+            <img src="consistency_diagnostics.svg" alt="Paired bar chart of six measured observation-consistency diagnostics for the rural and urban examples with true values labelled" width="760" height="386" loading="lazy">
           </a>
-          <figcaption><strong>Figure 2.</strong> The urban case exhibits larger spectral drift, NDVI drift and added gradient energy. The chart intentionally combines three dimensionless or explicitly scaled diagnostics; values should be read from their labels rather than compared as a shared physical unit.</figcaption>
+          <figcaption><strong>Figure 2.</strong> All six measured diagnostics for the two examples. Units differ per row (degrees, unitless reflectance error, and a ratio to bilinear), so bars are normalised per row to the row maximum and the true values are printed beside each bar; read values from the labels, not from bar lengths across rows. The largest per-band consistency MAE occurs in B08 for both cases.</figcaption>
         </figure>
 
         <h3>What can be concluded</h3>
@@ -212,22 +198,11 @@
         </div>
         <p>This measures sampler disagreement. It is not a confidence interval because coverage against truth has not been tested.</p>
 
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Spread diagnostic</th><th>Rural</th><th>Urban</th></tr></thead>
-            <tbody>
-              <tr><td>Mean 2&sigma; spread</td><td>0.0057</td><td>0.0196</td></tr>
-              <tr><td>p95 2&sigma; spread</td><td>0.0106</td><td>0.0467</td></tr>
-              <tr><td>Pixelwise Pearson r: spread vs four-band mean |learned &minus; bilinear|</td><td>0.375</td><td>0.421</td></tr>
-            </tbody>
-          </table>
-        </div>
-
         <figure class="paper-figure">
           <a href="stochastic_spread.svg" target="_blank" rel="noopener">
-            <img src="stochastic_spread.svg" alt="Mean and p95 stochastic spread for the rural and urban examples" width="760" height="430" loading="lazy">
+            <img src="stochastic_spread.svg" alt="Paired bar chart of mean and p95 two-sigma stochastic spread for the rural and urban examples with true values labelled" width="760" height="194" loading="lazy">
           </a>
-          <figcaption><strong>Figure 3.</strong> Urban stochastic spread is approximately 3.46 times the rural mean. Within each image, pixelwise Pearson correlations are 0.375 and 0.421. They describe spatial co-location between &eta;-zero sampler spread and deviation of the separate &eta;-0.95 output from interpolation; spatial autocorrelation and only two scenes preclude population inference.</figcaption>
+          <figcaption><strong>Figure 3.</strong> Bars are normalised per row to the urban value with true values labelled. Urban mean stochastic spread is approximately 3.46 times the rural mean. Pixelwise Pearson correlations between spread and the four-band mean |learned &minus; bilinear| residual are 0.375 (rural) and 0.421 (urban); they describe spatial co-location between &eta;-zero sampler spread and deviation of the separate &eta;-0.95 output from interpolation, and spatial autocorrelation with only two scenes precludes population inference.</figcaption>
         </figure>
 
         <h3>What calibration would require</h3>
