@@ -600,7 +600,7 @@ a { color: inherit; }
 .abstract p:last-child { margin-bottom: 0; }
 
 .paper-figure {
-  width: min(100%, 620px);
+  width: 100%;
   margin: 38px auto;
 }
 
