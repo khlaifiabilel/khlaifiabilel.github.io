@@ -240,56 +240,15 @@
       </div>
       <div class="blog-list">
       <article class="feature-post">
-        <a class="feature-visual" href="blog/super_resolution_crop_foundation/" aria-label="Read Sentinel-first crop intelligence">
-          <span class="feature-mosaic" aria-hidden="true">
-            <span class="feature-tile">
-              <img src="blog/super_resolution_crop_foundation/s2_temporal_composite.png" alt="" width="640" height="640" loading="lazy">
-              <span>S2 RGB &middot; 10 m</span>
-            </span>
-            <span class="feature-tile">
-              <img src="blog/super_resolution_crop_foundation/s1_pseudocolor.png" alt="" width="640" height="640" loading="lazy">
-              <span>S1 ASC &middot; 10 m</span>
-            </span>
-            <span class="feature-tile">
-              <img src="blog/super_resolution_crop_foundation/spot_rgb.png" alt="" width="640" height="640" loading="lazy">
-              <span>SPOT RGB &middot; 1 m grid</span>
-            </span>
-            <span class="feature-tile">
-              <img src="blog/super_resolution_crop_foundation/semantic_labels.png" alt="" width="640" height="640" loading="lazy">
-              <span>PASTIS &middot; 10 m</span>
-            </span>
-          </span>
+        <a class="feature-visual feature-chart" href="blog/parallelism_by_the_numbers/" aria-label="Read Parallelism by the numbers">
+          <img src="blog/parallelism_by_the_numbers/memory_per_rank.svg" alt="Analytical Adam optimizer state per rank versus world size for DDP, ZeRO-1, ZeRO-2 and ZeRO-3/FSDP2" width="760" height="430" loading="lazy">
         </a>
         <div class="feature-copy">
-          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 001</span></p>
-          <h3><a href="blog/super_resolution_crop_foundation/">Sentinel-first crop intelligence: joint 10 m mapping and constrained &times;10 detail</a></h3>
-          <p>A rigorous account of a compact multimodal temporal model that combines Sentinel-1 and Sentinel-2 for crop segmentation, parcel-boundary estimation and model-derived detail on a 1 m storage grid.</p>
-          <ul class="chips" role="list"><li>Remote sensing</li><li>Temporal Transformer</li><li>Multi-task learning</li><li>Reproducibility</li></ul>
-          <p class="more"><a href="blog/super_resolution_crop_foundation/">Read the research note &rarr;</a></p>
-        </div>
-      </article>
-      <article class="feature-post">
-        <a class="feature-visual feature-chart" href="blog/scaling_geospatial_deep_learning/" aria-label="Read Scaling geospatial deep learning">
-          <img src="blog/scaling_geospatial_deep_learning/throughput_by_batch.svg" alt="Measured RTX 4080 FP32 and AMP FP16 throughput by batch size" width="760" height="430" loading="lazy">
-        </a>
-        <div class="feature-copy">
-          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 002</span></p>
-          <h3><a href="blog/scaling_geospatial_deep_learning/">Scaling geospatial deep learning: from a single GPU to distributed PyTorch training</a></h3>
-          <p>A measurement-driven study of mixed precision, batch scaling, memory pressure and the evidence required for defensible DDP speedup claims.</p>
-          <ul class="chips" role="list"><li>PyTorch DDP</li><li>AMP</li><li>GPU profiling</li><li>Scaling</li></ul>
-          <p class="more"><a href="blog/scaling_geospatial_deep_learning/">Read the research note &rarr;</a></p>
-        </div>
-      </article>
-      <article class="feature-post">
-        <a class="feature-visual feature-image" href="blog/trustworthy_satellite_super_resolution/" aria-label="Read Beyond PSNR">
-          <img src="blog/trustworthy_satellite_super_resolution/urban_learned.png" alt="Learned four-band Sentinel-2 urban super-resolution preview" width="512" height="512" loading="lazy">
-        </a>
-        <div class="feature-copy">
-          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 003</span></p>
-          <h3><a href="blog/trustworthy_satellite_super_resolution/">Beyond PSNR: evaluating satellite super-resolution without high-resolution truth</a></h3>
-          <p>A scientific audit of observation consistency, spectral drift, learned high-frequency detail and stochastic spread in a Sentinel-2 latent-diffusion release.</p>
-          <ul class="chips" role="list"><li>Super-resolution</li><li>Spectral fidelity</li><li>Uncertainty</li><li>Remote sensing</li></ul>
-          <p class="more"><a href="blog/trustworthy_satellite_super_resolution/">Read the research note &rarr;</a></p>
+          <p class="post-meta"><time datetime="2026-08-07">7 August 2026</time> <span>Research note 005</span></p>
+          <h3><a href="blog/parallelism_by_the_numbers/">Parallelism by the numbers: the accounting doctrine behind neuralq-distributed</a></h3>
+          <p>Memory, communication and topology budgets for DDP, FSDP2, ZeRO, tensor and pipeline parallelism &mdash; validated before any pod is scheduled, with a RAPIDS data plane and three interchangeable Kubernetes backends.</p>
+          <ul class="chips" role="list"><li>Distributed training</li><li>FSDP2 / ZeRO</li><li>Kubernetes</li><li>GPU data plane</li></ul>
+          <p class="more"><a href="blog/parallelism_by_the_numbers/">Read the research note &rarr;</a></p>
         </div>
       </article>
       <article class="feature-post">
@@ -322,15 +281,56 @@
         </div>
       </article>
       <article class="feature-post">
-        <a class="feature-visual feature-chart" href="blog/parallelism_by_the_numbers/" aria-label="Read Parallelism by the numbers">
-          <img src="blog/parallelism_by_the_numbers/memory_per_rank.svg" alt="Analytical Adam optimizer state per rank versus world size for DDP, ZeRO-1, ZeRO-2 and ZeRO-3/FSDP2" width="760" height="430" loading="lazy">
+        <a class="feature-visual feature-image" href="blog/trustworthy_satellite_super_resolution/" aria-label="Read Beyond PSNR">
+          <img src="blog/trustworthy_satellite_super_resolution/urban_learned.png" alt="Learned four-band Sentinel-2 urban super-resolution preview" width="512" height="512" loading="lazy">
         </a>
         <div class="feature-copy">
-          <p class="post-meta"><time datetime="2026-08-07">7 August 2026</time> <span>Research note 005</span></p>
-          <h3><a href="blog/parallelism_by_the_numbers/">Parallelism by the numbers: the accounting doctrine behind neuralq-distributed</a></h3>
-          <p>Memory, communication and topology budgets for DDP, FSDP2, ZeRO, tensor and pipeline parallelism &mdash; validated before any pod is scheduled, with a RAPIDS data plane and three interchangeable Kubernetes backends.</p>
-          <ul class="chips" role="list"><li>Distributed training</li><li>FSDP2 / ZeRO</li><li>Kubernetes</li><li>GPU data plane</li></ul>
-          <p class="more"><a href="blog/parallelism_by_the_numbers/">Read the research note &rarr;</a></p>
+          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 003</span></p>
+          <h3><a href="blog/trustworthy_satellite_super_resolution/">Beyond PSNR: evaluating satellite super-resolution without high-resolution truth</a></h3>
+          <p>A scientific audit of observation consistency, spectral drift, learned high-frequency detail and stochastic spread in a Sentinel-2 latent-diffusion release.</p>
+          <ul class="chips" role="list"><li>Super-resolution</li><li>Spectral fidelity</li><li>Uncertainty</li><li>Remote sensing</li></ul>
+          <p class="more"><a href="blog/trustworthy_satellite_super_resolution/">Read the research note &rarr;</a></p>
+        </div>
+      </article>
+      <article class="feature-post">
+        <a class="feature-visual feature-chart" href="blog/scaling_geospatial_deep_learning/" aria-label="Read Scaling geospatial deep learning">
+          <img src="blog/scaling_geospatial_deep_learning/throughput_by_batch.svg" alt="Measured RTX 4080 FP32 and AMP FP16 throughput by batch size" width="760" height="430" loading="lazy">
+        </a>
+        <div class="feature-copy">
+          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 002</span></p>
+          <h3><a href="blog/scaling_geospatial_deep_learning/">Scaling geospatial deep learning: from a single GPU to distributed PyTorch training</a></h3>
+          <p>A measurement-driven study of mixed precision, batch scaling, memory pressure and the evidence required for defensible DDP speedup claims.</p>
+          <ul class="chips" role="list"><li>PyTorch DDP</li><li>AMP</li><li>GPU profiling</li><li>Scaling</li></ul>
+          <p class="more"><a href="blog/scaling_geospatial_deep_learning/">Read the research note &rarr;</a></p>
+        </div>
+      </article>
+      <article class="feature-post">
+        <a class="feature-visual" href="blog/super_resolution_crop_foundation/" aria-label="Read Sentinel-first crop intelligence">
+          <span class="feature-mosaic" aria-hidden="true">
+            <span class="feature-tile">
+              <img src="blog/super_resolution_crop_foundation/s2_temporal_composite.png" alt="" width="640" height="640" loading="lazy">
+              <span>S2 RGB &middot; 10 m</span>
+            </span>
+            <span class="feature-tile">
+              <img src="blog/super_resolution_crop_foundation/s1_pseudocolor.png" alt="" width="640" height="640" loading="lazy">
+              <span>S1 ASC &middot; 10 m</span>
+            </span>
+            <span class="feature-tile">
+              <img src="blog/super_resolution_crop_foundation/spot_rgb.png" alt="" width="640" height="640" loading="lazy">
+              <span>SPOT RGB &middot; 1 m grid</span>
+            </span>
+            <span class="feature-tile">
+              <img src="blog/super_resolution_crop_foundation/semantic_labels.png" alt="" width="640" height="640" loading="lazy">
+              <span>PASTIS &middot; 10 m</span>
+            </span>
+          </span>
+        </a>
+        <div class="feature-copy">
+          <p class="post-meta"><time datetime="2026-07-31">31 July 2026</time> <span>Research note 001</span></p>
+          <h3><a href="blog/super_resolution_crop_foundation/">Sentinel-first crop intelligence: joint 10 m mapping and constrained &times;10 detail</a></h3>
+          <p>A rigorous account of a compact multimodal temporal model that combines Sentinel-1 and Sentinel-2 for crop segmentation, parcel-boundary estimation and model-derived detail on a 1 m storage grid.</p>
+          <ul class="chips" role="list"><li>Remote sensing</li><li>Temporal Transformer</li><li>Multi-task learning</li><li>Reproducibility</li></ul>
+          <p class="more"><a href="blog/super_resolution_crop_foundation/">Read the research note &rarr;</a></p>
         </div>
       </article>
       </div>
